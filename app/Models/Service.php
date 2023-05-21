@@ -22,4 +22,9 @@ class Service extends Model
     {
         return $this->belongsTo(ServiceType::class);
     }
+    public function provider()
+    {
+        return $this->belongsTo(Provider::class);
+    }
+
 }
