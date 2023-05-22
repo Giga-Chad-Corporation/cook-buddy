@@ -5,17 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ServiceType extends Model
+class ProviderBill extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'type_name',
+        'provider_id',
+        'cost',
     ];
 
-    public function services()
+    public function provider()
     {
-        return $this->hasMany(Service::class);
+        return $this->belongsTo(Provider::class);
     }
 }
-

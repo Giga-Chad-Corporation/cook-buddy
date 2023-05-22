@@ -29,4 +29,8 @@ class User extends Model
     {
         return $this->belongsToMany(Service::class);
     }
+    public function food_orders()
+    {
+        return $this->hasMany(FoodOrder::class);
+    }
 }

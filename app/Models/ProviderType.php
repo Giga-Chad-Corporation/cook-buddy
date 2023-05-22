@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ServiceType extends Model
+class ProviderType extends Model
 {
     use HasFactory;
 
@@ -13,9 +13,9 @@ class ServiceType extends Model
         'type_name',
     ];
 
-    public function services()
+    public function providers()
     {
-        return $this->hasMany(Service::class);
+        return $this->hasMany(Provider::class);
     }
 }
 
