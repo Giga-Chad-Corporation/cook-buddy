@@ -33,4 +33,42 @@ class User extends Model
     {
         return $this->hasMany(FoodOrder::class);
     }
+    public function provider()
+    {
+        return $this->hasOne(Provider::class);
+    }
+
+    public function reportTickets()
+    {
+        return $this->hasMany(ReportTicket::class);
+    }
+
+    public function reviewedServices()
+    {
+        return $this->belongsToMany(Service::class, 'reviews')
+            ->withPivot('content', 'rate', 'picture_url')
+            ->withTimestamps();
+    }
+
+    public function providers()
+    {
+        return $this->belongsToMany(Provider::class, 'messages')
+            ->withPivot('message_content')
+            ->withTimestamps();
+    }
+
+    public function regions()
+    {
+        return $this->hasMany(Region::class);
+    }
+
+    public function relatedUsers()
+    {
+        return $this->belongsToMany(User::class, 'relation_table')
+            ->withPivot('content', 'rate', 'picture_url')
+            ->withTimestamps();
+    }
+
+
+
 }

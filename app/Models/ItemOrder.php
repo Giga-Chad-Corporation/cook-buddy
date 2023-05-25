@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class FoodOrder extends Model
+class ItemOrder extends Model
 {
     use HasFactory;
 
@@ -15,13 +15,14 @@ class FoodOrder extends Model
         'status',
     ];
 
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function menuItems()
+    public function items()
     {
-        return $this->belongsToMany(MenuItem::class)->withPivot('quantity');
+        return $this->belongsToMany(Item::class)->withPivot('quantity');
     }
 }

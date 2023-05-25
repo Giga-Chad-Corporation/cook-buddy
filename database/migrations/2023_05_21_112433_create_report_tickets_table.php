@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
+            $table->string('content_type')->nullable();
+            $table->unsignedBigInteger('content_id')->nullable();
             $table->timestamps();
         });
     }

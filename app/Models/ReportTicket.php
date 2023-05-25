@@ -5,14 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class FoodOrder extends Model
+class ReportTicket extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'planned_delivery_date',
-        'real_delivery_date',
-        'status',
+        'title',
+        'description',
+        'content_type',
+        'content_id',
     ];
 
     public function user()
@@ -20,8 +21,5 @@ class FoodOrder extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function menuItems()
-    {
-        return $this->belongsToMany(MenuItem::class)->withPivot('quantity');
-    }
+
 }
