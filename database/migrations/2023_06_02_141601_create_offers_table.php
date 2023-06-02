@@ -11,21 +11,22 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('services', function (Blueprint $table) {
+        Schema::create('offers', function (Blueprint $table) {
             $table->id();
-            $table->timestamp('start_date_time');
-            $table->timestamp('end_date_time');
-            $table->text('description')->nullable();
+            $table->unsignedBigInteger('provider_id');
+            $table->unsignedBigInteger('service_id');
             $table->timestamps();
+
+            $table->foreign('provider_id')->references('id')->on('providers')->onDelete('cascade');
+            $table->foreign('service_id')->references('id')->on('services')->onDelete('cascade');
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('services');
+        Schema::dropIfExists('offers');
     }
 };
