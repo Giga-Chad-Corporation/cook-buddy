@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id();
-            $table->timestamp('start_date_time');
-            $table->timestamp('end_date_time');
+            $table->timestamp('start_date_time')->useCurrent();
+            $table->timestamp('end_date_time')->nullable();
             $table->text('description')->nullable();
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
@@ -29,3 +28,4 @@ return new class extends Migration
         Schema::dropIfExists('services');
     }
 };
+
