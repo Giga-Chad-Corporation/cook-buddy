@@ -31,12 +31,56 @@ class User extends Authenticatable
         'password',
     ];
 
+    public function services()
+    {
+        return $this->belongsToMany(Service::class);
+    }
+    public function food_orders()
+    {
+        return $this->hasMany(FoodOrder::class);
+    }
+    public function provider()
+    {
+        return $this->hasOne(Provider::class);
+    }
+
+    public function reportTickets()
+    {
+        return $this->hasMany(ReportTicket::class);
+    }
+
+    public function reviewedServices()
+    {
+        return $this->belongsToMany(Service::class, 'reviews')
+            ->withPivot('content', 'rate', 'picture_url')
+            ->withTimestamps();
+    }
+
+    public function providers()
+    {
+        return $this->belongsToMany(Provider::class, 'messages')
+            ->withPivot('message_content')
+            ->withTimestamps();
+    }
+
+    public function regions()
+    {
+        return $this->hasMany(Region::class);
+    }
+
+    public function relatedUsers()
+    {
+        return $this->belongsToMany(User::class, 'relation_table')
+            ->withPivot('content', 'rate', 'picture_url')
+            ->withTimestamps();
+    }
     /**
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
      */
     protected $hidden = [
+        'password',
         'remember_token',
         'two_factor_recovery_codes',
         'two_factor_secret',
@@ -59,4 +103,9 @@ class User extends Authenticatable
     protected $appends = [
         'profile_photo_path',
     ];
+
+    public function getProfilePhotoPathAttribute(): string
+    {
+        return $this->profile_photo_path ?? '';
+    }
 }
