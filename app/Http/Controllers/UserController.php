@@ -23,29 +23,4 @@ class UserController extends Controller
 
         return $user->createToken($request->device_name)->plainTextToken;
     }
-    public function store(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:8',
-            'first_name' => 'required',
-            'last_name' => 'required',
-            'username' => 'required|unique:users',
-        ]);
-
-        $user = new User;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-        $user->first_name = $request->first_name;
-        $user->last_name = $request->last_name;
-        $user->username = $request->username;
-        // Set other fields as necessary
-
-        $user->save();
-
-        return response()->json([
-            'message' => 'User created successfully',
-            'user' => $user
-        ]);
-    }
 }

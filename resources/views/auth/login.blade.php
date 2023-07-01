@@ -83,7 +83,6 @@
             }).catch(error => {
                 console.log('Error occurred:', error);  // Debug message
             });
-
         });
     </script>
 @endsection
