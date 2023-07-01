@@ -10,18 +10,19 @@ class Provider extends Model
     use HasFactory;
 
     protected $fillable = [
-        'hourly_cost',
+        'user_id', 'provider_type_id',
     ];
+
+    protected $attributes = [
+        'hourly_cost' => 0,
+    ];
+
 
     public function providerType()
     {
         return $this->belongsTo(ProviderType::class);
     }
 
-    public function services()
-    {
-        return $this->hasMany(Service::class);
-    }
 
     public function providerBills()
     {
@@ -54,6 +55,12 @@ class Provider extends Model
             ->withPivot('message_content')
             ->withTimestamps();
     }
+
+    public function offers()
+    {
+        return $this->hasMany('App\Models\Offer');
+    }
+
 
 
 }
