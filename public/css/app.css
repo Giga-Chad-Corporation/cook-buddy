@@ -1,0 +1,130 @@
+@import url("https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+    display: none;
+}
+
+body {
+    overflow-x: hidden;
+    padding-top: 80px;
+}
+
+
+/* Body font */
+body {
+    font-family: "Lato", Arial, sans-serif;
+}
+
+/* Titles and headers font */
+h1, h2, h3, h4, h5, h6, .navbar-brand, .nav-link {
+    font-family: "Eczar", Arial, sans-serif;
+}
+
+
+
+/* Header/Navbar/Buttons styling */
+.navbar {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.navbar-light .navbar-nav .nav-link {
+    color : #000000;
+}
+
+.navbar-brand {
+    color: #000000;
+    font-size: 1.5em;
+}
+
+.logo-image {
+    max-height: 60px;
+}
+
+.btn-outline-primary {
+    color: #FB5012;
+    border-color: #FB5012;
+}
+
+.btn-primary {
+    background-color: #FB5012;
+    border-color: #FB5012;
+}
+
+#inscriptionModalContent {
+    padding-left: 6%;
+    padding-right: 6%;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: #2b2b2b !important; /* Change to desired hover color */
+    border-color: #000000 !important; /* Change to desired border color */
+}
+
+.btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary:active {
+    background-color: #ffffff !important; /* Change to desired hover color */
+    color: #000000 !important; /* Change to desired text color */
+}
+
+/* Carousel styling */
+.swiper-button-next, .swiper-button-prev {
+    color: #000000; /* Change color according to your need */
+}
+
+.swiper-slide img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+/* formation */
+
+.row {
+    display: flex;
+    flex-direction:row;
+    align-items: center;
+}
+
+
+.formation-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.formation-image {
+    width: 100%;
+    height: 60%;
+    object-fit: contain;  /* Change to "contain" to prevent image from being cut off */
+}
+
+.formation-block a {
+    color: inherit; /* to keep the same color as the parent */
+    text-decoration: none; /* to remove the underline */
+    display: block;
+}
+
+.max-height {
+    max-height: 50vh;
+}
+
+/* header */
+
+
+.navbar {
+    transition: top 0.3s;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+}
+
+
+.navbar.hidden {
+    top: -100px;
+}

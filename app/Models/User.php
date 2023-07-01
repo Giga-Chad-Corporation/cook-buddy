@@ -100,4 +100,10 @@ class User extends Authenticatable
         'profile_photo_path',
     ];
 
+    public function getProfilePhotoPathAttribute()
+    {
+        // Logic to retrieve the profile photo path attribute
+        // Return the profile photo path
+    }
+
 }
