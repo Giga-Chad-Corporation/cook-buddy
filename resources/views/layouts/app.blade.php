@@ -49,8 +49,8 @@
         </div>
         <div class="d-flex">
             @guest
-{{--                <button class="btn btn-outline-primary me-2" onclick="location.href='{{ route('register') }}'">Inscription</button>--}}
-{{--                <button class="btn btn-primary ml-2" onclick="location.href='{{ route('login') }}'">Connexion</button>--}}
+                <button class="btn btn-outline-primary me-2" onclick="location.href='{{ route('register') }}'">Inscription</button>
+                <button class="btn btn-primary ml-2" onclick="location.href='{{ route('login') }}'">Connexion</button>
             @else
                 <button class="btn btn-outline-primary me-2" onclick="location.href='{{ route('user.profile') }}'">Profile</button>
                 <button class="btn btn-primary ml-2" onclick="confirmLogout()">Déconnexion</button>

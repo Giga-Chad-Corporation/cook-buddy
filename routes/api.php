@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\APILoginController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
@@ -17,17 +18,14 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::post('/register', [RegisterController::class, 'register'])->name('api.register');
-Route::post('/login', [LoginController::class, 'login'])->name('api.login');
+Route::post('/login', [APILoginController::class, 'store'])->name('api.login');
+Route::get('/logout', [LoginController::class, 'logout'])->name('api.logout');
 
-Route::middleware('auth:sanctum')->post('/sanctum/token', [UserController::class, 'getToken'])->name('api.sanctum.token');
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', [UserController::class, 'getUser'])->name('api.user');
+    Route::post('/sanctum/token', [UserController::class, 'getToken'])->name('api.sanctum.token');
+});
+
 
 

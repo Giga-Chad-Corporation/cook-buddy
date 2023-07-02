@@ -8,6 +8,17 @@
                     <div class="card-header">Login</div>
 
                     <div class="card-body">
+                        @if (session('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
+                        @if (session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
                         <form id="loginForm">
                             @csrf
                             <div class="form-group row">
@@ -55,9 +66,7 @@
     <script>
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            console.log('Form submit event triggered');  // Debug message
-            console.log('Sending login request...');
-            fetch('{{ route('api.login') }}', {
+                fetch('{{ route('post.login') }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -69,12 +78,9 @@
                     remember: document.getElementById('remember').checked,
                 })
             }).then(response => {
-                console.log('Received response from server:', response);  // Add this line for debugging
                 return response.json();
             }).then(data => {
-                console.log('Received data from server:', data);  // Add this line for debugging
                 if (data.token) {
-                    // Store the token in local storage for future API requests
                     localStorage.setItem('api_token', data.token);
                     alert('Login successful.');
                 } else {

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 
 class LoginController extends Controller
@@ -16,25 +17,31 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $credentials = $request->only('email', 'password');
+        $response = Http::post('/api/login', [
+            'email' => $request->email,
+            'password' => $request->password,
+        ]);
 
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            $token = $user->createToken('api-token')->plainTextToken;
-
-            // Store the token in the user's record
-            $user->api_token = $token;
-            $user->save();
-
-            return response()->json([
-                'message' => 'Login successful.',
-                'token' => $token,
-            ], 200);
+        if ($response->ok()) {
+            $responseData = $response->json();
+            return redirect()->route('home')->with('success', $responseData['message']);
         }
 
-        return response()->json([
-            'message' => 'Invalid credentials.',
-        ], 401);
+        return redirect()->route('login')->with('error', 'Invalid credentials.');
+    }
+
+    public function logout(Request $request)
+    {
+        $user = Auth::user();
+        if ($user) {
+//            $user->tokens()->delete();
+            $user->api_token = null;
+            $user->save();
+        }
+
+        Auth::logout();
+
+        return redirect()->route('login');
     }
 
 
