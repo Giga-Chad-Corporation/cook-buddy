@@ -14,7 +14,7 @@ class AddAdminIdToDocumentsTable extends Migration
     public function up()
     {
         Schema::table('documents', function (Blueprint $table) {
-            $table->unsignedBigInteger('admin_id')->after('id');
+            $table->unsignedBigInteger('admin_id')->nullable()->after('id');
 
             $table->foreign('admin_id')
                 ->references('id')
@@ -36,3 +36,4 @@ class AddAdminIdToDocumentsTable extends Migration
         });
     }
 }
+

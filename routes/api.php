@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProviderTypeController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -29,5 +30,7 @@ Route::post('/register', [RegisterController::class, 'register'])->name('api.reg
 Route::post('/login', [LoginController::class, 'login'])->name('api.login');
 
 Route::middleware('auth:sanctum')->post('/sanctum/token', [UserController::class, 'getToken'])->name('api.sanctum.token');
+
+Route::get('/provider-types', [ProviderTypeController::class, 'index'])->name('api.providerTypes');
 
 
