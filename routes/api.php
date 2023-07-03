@@ -22,7 +22,7 @@ Route::post('/register', [RegisterController::class, 'register'])->name('api.reg
 Route::post('/login', [APILoginController::class, 'login'])->name('api.login');
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/user', [UserController::class, 'getUser'])->name('api.user');
+    Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'getAuthenticatedUser'])->name('api.user');
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
 
