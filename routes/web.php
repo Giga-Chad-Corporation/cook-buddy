@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
-    Route::get('/user/profile', [UserController::class, 'show'])->name('user.profile');
+    Route::get('/user/profile', [UserController::class, 'showProfile'])->name('user.profile');
     Route::put('/user/profile/update', [UserController::class, 'updateProfile'])->name('user.profile.update');
     Route::post('/user/profile/picture', [UserController::class, 'updateProfilePicture'])->name('user.profile.picture');
 
@@ -30,3 +30,4 @@ Route::middleware(['web'])->group(function () {
     Route::post('login', [LoginController::class, 'login']);
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 });
+

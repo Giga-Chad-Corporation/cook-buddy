@@ -19,15 +19,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/register', [RegisterController::class, 'register'])->name('api.register');
-Route::post('/login', [APILoginController::class, 'login'])->name('api.login');
+Route::prefix('api')->middleware('api')->group(function () {
+    Route::post('/register', [RegisterController::class, 'register'])->name('api.register');
+    Route::post('/login', [APILoginController::class, 'login'])->name('api.login');
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::middleware('auth:sanctum')->get('/user', [UserController::class, 'getAuthenticatedUser'])->name('api.user');
-    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/user', [UserController::class, 'getAuthenticatedUser'])->name('api.user');
+        Route::post('/logout', [LoginController::class, 'logout'])->name('api.logout');
+    });
+
+    Route::get('/provider-types', [ProviderTypeController::class, 'index'])->name('api.providerTypes');
 });
-
-
-Route::get('/provider-types', [ProviderTypeController::class, 'index'])->name('api.providerTypes');
 
 
