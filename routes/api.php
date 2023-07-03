@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\APILoginController;
+use App\Http\Controllers\API\APIRegisterController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProviderTypeController;
 use App\Http\Controllers\RegisterController;
@@ -19,8 +20,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('api')->middleware('api')->group(function () {
-    Route::post('/register', [RegisterController::class, 'register'])->name('api.register');
+Route::middleware('api')->group(function () {
+    Route::post('/register', [APIRegisterController::class, 'register'])->name('api.register');
     Route::post('/login', [APILoginController::class, 'login'])->name('api.login');
 
     Route::middleware('auth:sanctum')->group(function () {
