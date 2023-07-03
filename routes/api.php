@@ -19,12 +19,11 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/register', [RegisterController::class, 'register'])->name('api.register');
-Route::post('/login', [APILoginController::class, 'store'])->name('api.login');
-Route::get('/logout', [LoginController::class, 'logout'])->name('api.logout');
+Route::post('/login', [APILoginController::class, 'login'])->name('api.login');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [UserController::class, 'getUser'])->name('api.user');
-    Route::post('/sanctum/token', [UserController::class, 'getToken'])->name('api.sanctum.token');
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
 
 

@@ -4,49 +4,35 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
     public function showLoginForm()
     {
-        return view('login');
+        return view('auth.login');
     }
 
     public function login(Request $request)
     {
-        $response = Http::post('/api/login', [
-            'email' => $request->email,
-            'password' => $request->password,
-        ]);
+        $credentials = $request->only('email', 'password');
 
-        if ($response->ok()) {
-            $responseData = $response->json();
-            return redirect()->route('home')->with('success', $responseData['message']);
+        if (Auth::attempt($credentials, $request->remember)) {
+            return redirect()->intended('home')->with('success', 'Login successful.');
         }
 
-        return redirect()->route('login')->with('error', 'Invalid credentials.');
+        return back()->with('error', 'Invalid credentials.')->withInput();
     }
 
     public function logout(Request $request)
     {
-        $user = Auth::user();
-        if ($user) {
-//            $user->tokens()->delete();
-            $user->api_token = null;
-            $user->save();
-        }
-
         Auth::logout();
 
-        return redirect()->route('login');
-    }
+        $request->session()->invalidate();
 
+        $request->session()->regenerateToken();
 
-    private function generateRandomDeviceName()
-    {
-        return 'device_' . Str::random(8);
+        return redirect('/');
     }
 }
+
+

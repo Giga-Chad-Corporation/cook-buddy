@@ -2,68 +2,27 @@
 
 namespace App\Http\Controllers\API;
 
-use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;  // Don't forget to import the Log facade
 
 class APILoginController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
+            // Authentication passed, create a new token for the user
             $user = Auth::user();
-            $token = $user->createToken('api-token')->plainTextToken;
+            $token = $user->createToken('api_token')->plainTextToken;
 
-            $user->api_token = $token;
-            $user->save();
-
-            return response()->json([
-                'message' => 'Login successful.',
-                'user' => $user,
-                'token' => $token,
-            ], 200);
+            return response()->json(['token' => $token], 200);
         }
 
-        return response()->json([
-            'message' => 'Invalid credentials.',
-        ], 401);
+        // Authentication failed
+        return response()->json(['error' => 'Invalid Credentials'], 401);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, User $user)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
-    {
-        //
-    }
 }

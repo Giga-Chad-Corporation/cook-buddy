@@ -21,6 +21,12 @@
                         @endif
                         <form id="loginForm">
                             @csrf
+                            @error('email')
+                                <span class="invalid-feedback" role="alert">
+                                   <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+
                             <div class="form-group row">
                                 <label for="email" class="col-md-4 col-form-label text-md-right">Email</label>
 
@@ -64,9 +70,9 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
-                fetch('{{ route('post.login') }}', {
+            fetch('{{ route('login') }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -78,17 +84,18 @@
                     remember: document.getElementById('remember').checked,
                 })
             }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Login failed.');
+                }
                 return response.json();
             }).then(data => {
-                if (data.token) {
-                    localStorage.setItem('api_token', data.token);
-                    alert('Login successful.');
-                } else {
-                    alert('Login failed.');
-                }
+                alert('Login successful.');
+                window.location.href = "{{ route('home') }}";
             }).catch(error => {
-                console.log('Error occurred:', error);  // Debug message
+                alert(error.message);
             });
         });
     </script>
+
+
 @endsection
