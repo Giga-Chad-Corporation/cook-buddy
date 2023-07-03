@@ -13,7 +13,8 @@ class Document extends Model
         'url',
         'is_valid',
         'document_type_id',
-        'provider_id'
+        'provider_id',
+        'admin_id'
     ];
 
     public function provider()

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\APILoginController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProviderTypeController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -26,5 +27,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
 
+
+Route::get('/provider-types', [ProviderTypeController::class, 'index'])->name('api.providerTypes');
 
 
