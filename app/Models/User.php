@@ -107,4 +107,10 @@ class User extends Authenticatable
         // Return the profile photo path
     }
 
+    public function isProvider()
+    {
+        // Check if the user has a provider relationship
+        return $this->provider()->exists();
+    }
+
 }

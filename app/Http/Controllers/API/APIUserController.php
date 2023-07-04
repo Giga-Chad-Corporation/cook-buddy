@@ -3,28 +3,61 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Provider;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class APIUserController extends Controller
 {
-    public function updateUser(Request $request)
+    public function updateProfile(Request $request)
     {
-        $user = User::findOrFail($request->input('user_id'));
+        $user = Auth::user(); // Retrieve the authenticated user
 
-        // Valider la requête...
+        // Validate the request...
 
-        $user->first_name = $request->input('first_name');
-        $user->last_name = $request->input('last_name');
-        $user->username = $request->input('username');
-        $user->address = $request->input('address');
-        $user->phone = $request->input('phone');
-        $user->description = $request->input('description');
+        $user->fill($request->all()); // Update the user model with the request data
 
         $user->save();
 
-        // Retourner la réponse JSON avec les données utilisateur mises à jour
+        // Return the JSON response with the updated user data
         return response()->json($user);
+    }
+
+    public function showProfile(Request $request)
+    {
+        $user = Auth::user();
+        $role = 'Client'; // Default role
+        $providerType = null;
+
+        // Check if the user is a provider
+        $provider = Provider::where('user_id', $user->id)->first();
+        if ($provider) {
+            $role = 'Prestataire';
+            $providerType = $provider->providerType->type_name; // Access the provider type name
+        }
+
+        // Return the user profile information as JSON response along with role and provider type
+        return response()->json([
+            'user' => $user,
+            'role' => $role,
+            'providerType' => $providerType,
+        ]);
+    }
+
+
+
+
+
+
+
+
+    public function updateProfilePicture(Request $request)
+    {
+        // Validate and process the profile picture update
+
+        // Return the JSON response with the updated user data
+        return response()->json(['message' => 'Profile picture updated successfully']);
     }
 }
 

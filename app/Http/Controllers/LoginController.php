@@ -12,16 +12,6 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    public function login(Request $request)
-    {
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials, $request->remember)) {
-            return redirect()->intended('home')->with('success', 'Login successful.');
-        }
-
-        return back()->with('error', 'Invalid credentials.')->withInput();
-    }
 
     public function logout(Request $request)
     {

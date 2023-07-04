@@ -19,13 +19,9 @@
                                 {{ session('success') }}
                             </div>
                         @endif
-                        <form id="loginForm">
+
+                        <form id="loginForm" action="{{ route('api.login') }}" method="POST">
                             @csrf
-                            @error('email')
-                                <span class="invalid-feedback" role="alert">
-                                   <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
 
                             <div class="form-group row">
                                 <label for="email" class="col-md-4 col-form-label text-md-right">Email</label>
@@ -72,7 +68,7 @@
     <script>
         document.getElementById('loginForm').addEventListener('submit', function (e) {
             e.preventDefault();
-            fetch('{{ route('login') }}', {
+            fetch('{{ route('api.login') }}', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -96,6 +92,4 @@
             });
         });
     </script>
-
-
 @endsection

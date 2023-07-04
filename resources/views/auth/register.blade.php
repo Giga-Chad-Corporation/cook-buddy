@@ -160,23 +160,37 @@
                             // Display form validation errors
                             const errorMessages = Object.values(data.errors).flat();
                             const errorContainer = document.getElementById('error-container');
-                            errorContainer.innerHTML = '';
+                            errorContainer.innerHTML = ''; // Clear previous errors
                             errorMessages.forEach(message => {
                                 const errorElement = document.createElement('div');
+                                errorElement.className = 'alert alert-danger'; // add bootstrap class
                                 errorElement.textContent = message;
                                 errorContainer.appendChild(errorElement);
                             });
                         } else if (data.message) {
                             // Registration successful, display success message
                             const successContainer = document.getElementById('success-container');
-                            successContainer.textContent = data.message;
+                            successContainer.innerHTML = ''; // Clear previous success message
+                            const successElement = document.createElement('div');
+                            successElement.className = 'alert alert-success'; // add bootstrap class
+                            successElement.textContent = data.message;
+                            successContainer.appendChild(successElement);
+
+                            // Redirect to login page after 3 seconds
+                            setTimeout(function(){
+                                window.location.href = '{{ route('login') }}';
+                            }, 3000);
                         }
                     })
                     .catch(error => {
                         console.log('Registration failed:', error);
                         // Handle registration error
                     });
+
+
+
             });
+
 
             // Provider button click event handler
             document.getElementById('provider-button').addEventListener('click', function() {
@@ -196,4 +210,5 @@
             });
         });
     </script>
+
 @endsection

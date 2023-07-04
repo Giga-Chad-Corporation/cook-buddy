@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\APILoginController;
 use App\Http\Controllers\API\APIRegisterController;
+use App\Http\Controllers\API\APIUserController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProviderTypeController;
 use App\Http\Controllers\RegisterController;
@@ -22,10 +23,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('api')->group(function () {
     Route::post('/register', [APIRegisterController::class, 'register'])->name('api.register');
-    Route::post('/login', [APILoginController::class, 'login'])->name('api.login');
+    Route::post('login', [APILoginController::class, 'login'])->name('api.login');
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/user', [UserController::class, 'getAuthenticatedUser'])->name('api.user');
+        Route::get('/user/profile', [APIUserController::class, 'showProfile'])->name('api.user.profile');
+        Route::put('user/profile', [APIUserController::class, 'updateProfile'])->name('api.user.profile.update');
+        Route::post('user/profile/picture', [APIUserController::class, 'updateProfilePicture'])->name('api.user.profile.picture');
         Route::post('/logout', [LoginController::class, 'logout'])->name('api.logout');
     });
 

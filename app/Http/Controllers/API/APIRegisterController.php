@@ -16,7 +16,6 @@ class APIRegisterController extends Controller
 {
     public function register(Request $request)
     {
-        var_dump("register");
         $validator = Validator::make($request->all(), [
             'username' => ['required', 'string', 'max:255', 'unique:users'],
             'first_name' => ['required', 'string', 'max:255'],
@@ -40,7 +39,12 @@ class APIRegisterController extends Controller
             'last_name' => $request->input('last_name'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
+            'email_verified_at' => null // the email is not yet verified
         ]);
+
+        // Here you could trigger an email to the user with a verification link
+        // You might want to create a unique token, save it to the database,
+        // and send it to the user so you can validate it when they click on the verification link.
 
         if ($request->input('is_provider')) {
             $providerType = ProviderType::find($request->input('provider_type'));
@@ -74,9 +78,8 @@ class APIRegisterController extends Controller
         }
 
         return response()->json([
-            'message' => 'User registered successfully.',
+            'message' => 'User registered successfully. Please verify your email.',
             'user' => $user
         ], 201);
     }
 }
-

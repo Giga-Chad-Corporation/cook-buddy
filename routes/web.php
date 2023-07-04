@@ -18,16 +18,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['web'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
-    Route::get('/user/profile', [UserController::class, 'showProfile'])->name('user.profile');
-    Route::put('/user/profile/update', [UserController::class, 'updateProfile'])->name('user.profile.update');
-    Route::post('/user/profile/picture', [UserController::class, 'updateProfilePicture'])->name('user.profile.picture');
 
     Route::get('register', function () {
         return view('auth.register');
     })->name('register');
 
+    Route::get('user/profile', function () {
+        return view('user.profile');
+    })->name('user.profile');
+
+
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
-    Route::post('login', [LoginController::class, 'login']);
     Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 });
 
