@@ -7,22 +7,40 @@ use App\Models\Provider;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class APIUserController extends Controller
 {
     public function updateProfile(Request $request)
     {
-        $user = Auth::user(); // Retrieve the authenticated user
+        $user = Auth::user();
 
         // Validate the request...
+        $request->validate([
+            'first_name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
+            'username' => 'nullable|string|max:255|unique:users,username,' . $user->id,
+            'address' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'description' => 'nullable|string|max:500',
+        ]);
 
-        $user->fill($request->all()); // Update the user model with the request data
+        // Retrieve the request data
+        $requestData = $request->only(['first_name', 'last_name', 'username', 'address', 'phone', 'description']);
 
+        Log::info('Request data:', $requestData);
+
+        $user->update($requestData);
+
+
+        // Save the updated user model
         $user->save();
 
-        // Return the JSON response with the updated user data
-        return response()->json($user);
+        // Return the JSON response with the success message
+        return response()->json(['message' => 'Profile updated successfully.']);
     }
+
+
 
     public function showProfile(Request $request)
     {
@@ -44,11 +62,6 @@ class APIUserController extends Controller
             'providerType' => $providerType,
         ]);
     }
-
-
-
-
-
 
 
 

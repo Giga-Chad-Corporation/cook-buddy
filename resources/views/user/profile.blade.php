@@ -24,7 +24,7 @@
                                     <button id="editButton" class="btn btn-primary">Modifier</button>
                                     <form id="profileForm" method="POST" style="display: none;">
                                         @csrf
-                                        @method('PUT')
+                                        @method('PATCH')
 
                                         <button type="submit" id="saveButton" class="btn btn-primary mb-3" style="display: none;">Enregistrer les modifications</button>
 
@@ -81,134 +81,130 @@
     </div>
 
     <script>
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            var profileForm = document.getElementById('profileForm');
+            var editButton = document.getElementById('editButton');
+            var saveButton = document.getElementById('saveButton');
 
             // Fetch user profile data
-            $.ajax({
-                url: "{{ route('api.user.profile') }}",
-                method: 'GET',
-                success: function(data) {
+            fetch("{{ route('api.user.profile') }}")
+                .then(response => response.json())
+                .then(data => {
                     if (data.user) {
                         var user = data.user;
                         var role = data.role;
                         var providerType = data.providerType;
 
-                        $('#userName').text('Nom : ' + user.first_name + ' ' + user.last_name);
-                        $('#userEmail').text('Email : ' + user.email);
-                        $('#userUsername').text('Username : ' + user.username);
-                        $('#userAddress').text('Adresse : ' + user.address);
-                        $('#userPhone').text('Téléphone : ' + user.phone);
-                        $('#userDescription').text('Description : ' + user.description);
-                        $('#userRole').text('Rôle : ' + role); // Update the role text
+                        document.getElementById('userName').innerText = 'Nom : ' + user.first_name + ' ' + user.last_name;
+                        document.getElementById('userEmail').innerText = 'Email : ' + user.email;
+                        document.getElementById('userUsername').innerText = 'Username : ' + user.username;
+                        document.getElementById('userAddress').innerText = 'Adresse : ' + user.address;
+                        document.getElementById('userPhone').innerText = 'Téléphone : ' + user.phone;
+                        document.getElementById('userDescription').innerText = 'Description : ' + user.description;
+                        document.getElementById('userRole').innerText = 'Rôle : ' + role;
 
                         if (role === 'Prestataire') {
-                            $('#userProviderType').text('Type de Prestataire : ' + providerType); // Update the provider type text
-                            $('#userProviderType').show(); // Show provider type only if user role is 'Prestataire'
+                            document.getElementById('userProviderType').innerText = 'Type de Prestataire : ' + providerType;
+                            document.getElementById('userProviderType').style.display = 'block';
                         } else {
-                            $('#userProviderType').hide(); // Hide provider type for other roles
+                            document.getElementById('userProviderType').style.display = 'none';
                         }
 
-                        // Update form fields with user profile data
-                        $('input[name="first_name"]').val(user.first_name);
-                        $('input[name="last_name"]').val(user.last_name);
-                        $('input[name="email"]').val(user.email);
-                        $('input[name="username"]').val(user.username);
-                        $('input[name="address"]').val(user.address);
-                        $('input[name="phone"]').val(user.phone);
-                        $('input[name="description"]').val(user.description);
+                        document.querySelector('input[name="first_name"]').value = user.first_name;
+                        document.querySelector('input[name="last_name"]').value = user.last_name;
+                        document.querySelector('input[name="email"]').value = user.email;
+                        document.querySelector('input[name="username"]').value = user.username;
+                        document.querySelector('input[name="address"]').value = user.address;
+                        document.querySelector('input[name="phone"]').value = user.phone;
+                        document.querySelector('input[name="description"]').value = user.description;
                     } else {
                         console.error('Failed to fetch user profile data:', data);
                     }
-                },
-                error: function(xhr, ajaxOptions, thrownError) {
-                    console.log('Error:', thrownError);
-                }
-            });
+                })
+                .catch(error => console.log(error));
 
             // Update user profile picture
-            $('#saveProfilePicture').click(function() {
+            document.getElementById('saveProfilePicture').addEventListener('click', function() {
                 var formData = new FormData();
-                var file = $('#profilePictureInput')[0].files[0];
+                var file = document.getElementById('profilePictureInput').files[0];
                 formData.append('profile_picture', file);
                 formData.append('_token', '{{ csrf_token() }}');
 
-                $.ajax({
-                    url: "{{ route('api.user.profile.picture') }}",
+                fetch("{{ route('api.user.profile.picture') }}", {
                     method: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(data) {
-                        $('#saveProfilePicture').hide();
-                        $('#message').text('Photo de profil enregistrée avec succès !').show();
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('saveProfilePicture').style.display = 'none';
+                        document.getElementById('message').innerText = 'Photo de profil enregistrée avec succès !';
+                        document.getElementById('message').style.display = 'block';
                         setTimeout(function() {
-                            $('#message').fadeOut();
+                            document.getElementById('message').style.display = 'none';
                         }, 3000);
-                    },
-                    error: function(xhr, ajaxOptions, thrownError) {
-                        console.log(thrownError);
-                    }
-                });
+                    })
+                    .catch(error => console.log(error));
             });
 
             // Handle the "Modifier" button click
-            $('#editButton').click(function() {
-                $('#editButton').hide();
-                $('#saveButton').show();
-                $('.userInfo').hide();
-                $('#profileForm').show();
+            editButton.addEventListener('click', function() {
+                editButton.style.display = 'none';
+                saveButton.style.display = 'block';
+                var userInfoElements = document.getElementsByClassName('userInfo');
+                for (var i = 0; i < userInfoElements.length; i++) {
+                    userInfoElements[i].style.display = 'none';
+                }
+                profileForm.style.display = 'block';
             });
 
             // Handle the form submission
-            $('#profileForm').on('submit', function(e) {
+            profileForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 
-                var formData = new FormData(this);
-                formData.append('_method', 'PUT');
+                var formData = new FormData(profileForm);
+                formData.append('_method', 'PATCH');
                 formData.append('_token', '{{ csrf_token() }}');
 
-                $.ajax({
-                    type: "POST",
-                    url: "{{ route('api.user.profile.update') }}",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(data) {
+                fetch("{{ route('api.user.profile.update') }}", {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
                         console.log('Success:', data);
 
                         if (data.user) {
                             var user = data.user;
 
                             // Update user info on the page
-                            $('#userName').text('Nom : ' + user.first_name + ' ' + user.last_name);
-                            $('#userEmail').text('Email : ' + user.email);
-                            $('#userUsername').text('Username : ' + user.username);
-                            $('#userAddress').text('Adresse : ' + user.address);
-                            $('#userPhone').text('Téléphone : ' + user.phone);
-                            $('#userDescription').text('Description : ' + user.description);
+                            document.getElementById('userName').innerText = 'Nom : ' + user.first_name + ' ' + user.last_name;
+                            document.getElementById('userEmail').innerText = 'Email : ' + user.email;
+                            document.getElementById('userUsername').innerText = 'Username : ' + user.username;
+                            document.getElementById('userAddress').innerText = 'Adresse : ' + user.address;
+                            document.getElementById('userPhone').innerText = 'Téléphone : ' + user.phone;
+                            document.getElementById('userDescription').innerText = 'Description : ' + user.description;
 
                             // Reset form fields
-                            $('input[name="first_name"]').val('');
-                            $('input[name="last_name"]').val('');
-                            $('input[name="email"]').val('');
-                            $('input[name="username"]').val('');
-                            $('input[name="address"]').val('');
-                            $('input[name="phone"]').val('');
-                            $('input[name="description"]').val('');
+                            document.querySelector('input[name="first_name"]').value = '';
+                            document.querySelector('input[name="last_name"]').value = '';
+                            document.querySelector('input[name="email"]').value = '';
+                            document.querySelector('input[name="username"]').value = '';
+                            document.querySelector('input[name="address"]').value = '';
+                            document.querySelector('input[name="phone"]').value = '';
+                            document.querySelector('input[name="description"]').value = '';
 
                             // Hide form, show user info and "Modifier" button
-                            $('#profileForm').hide();
-                            $('.userInfo').show();
-                            $('#saveButton').hide();
-                            $('#editButton').show();
+                            profileForm.style.display = 'none';
+                            var userInfoElements = document.getElementsByClassName('userInfo');
+                            for (var i = 0; i < userInfoElements.length; i++) {
+                                userInfoElements[i].style.display = 'block';
+                            }
+                            saveButton.style.display = 'none';
+                            editButton.style.display = 'block';
                         }
-                    },
-                    error: function(xhr, ajaxOptions, thrownError) {
-                        console.log('Error:', thrownError);
-                    }
-                });
+                    })
+                    .catch(error => console.log('Error:', error));
             });
         });
     </script>
-
 @endsection

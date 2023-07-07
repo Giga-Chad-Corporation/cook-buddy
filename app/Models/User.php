@@ -25,8 +25,12 @@ class User extends Authenticatable
         'email',
         'password',
         'profile_photo_path',
-        'api_token'
+        'api_token',
+        'address',
+        'phone',
+        'description'
     ];
+
 
     public function services()
     {

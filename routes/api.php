@@ -27,7 +27,7 @@ Route::middleware('api')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user/profile', [APIUserController::class, 'showProfile'])->name('api.user.profile');
-        Route::put('user/profile', [APIUserController::class, 'updateProfile'])->name('api.user.profile.update');
+        Route::patch('user/profile/update', [APIUserController::class, 'updateProfile'])->name('api.user.profile.update');
         Route::post('user/profile/picture', [APIUserController::class, 'updateProfilePicture'])->name('api.user.profile.picture');
         Route::post('/logout', [LoginController::class, 'logout'])->name('api.logout');
     });
