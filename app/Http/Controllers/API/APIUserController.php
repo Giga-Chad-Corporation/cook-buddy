@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class APIUserController extends Controller
 {
@@ -15,20 +16,28 @@ class APIUserController extends Controller
     {
         $user = Auth::user();
 
+        $messages = [
+            'phone.required' => 'A phone number is required',
+            'phone.numeric' => 'Phone number should be only numbers',
+            'phone.digits_between' => 'Phone number should be between 10 and 15 digits',
+        ];
+
         // Validate the request...
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'first_name' => 'nullable|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'username' => 'nullable|string|max:255|unique:users,username,' . $user->id,
             'address' => 'nullable|string|max:255',
-            'phone' => 'nullable|string|max:20',
+            'phone' => 'nullable|numeric|digits_between:10,15',
             'description' => 'nullable|string|max:500',
-        ]);
+        ], $messages);
+
+        if($validator->fails()){
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
 
         // Retrieve the request data
         $requestData = $request->only(['first_name', 'last_name', 'username', 'address', 'phone', 'description']);
-
-        Log::info('Request data:', $requestData);
 
         $user->update($requestData);
 
@@ -42,8 +51,10 @@ class APIUserController extends Controller
 
 
 
+
     public function showProfile(Request $request)
     {
+
         $user = Auth::user();
         $role = 'Client'; // Default role
         $providerType = null;
@@ -55,22 +66,55 @@ class APIUserController extends Controller
             $providerType = $provider->providerType->type_name; // Access the provider type name
         }
 
-        // Return the user profile information as JSON response along with role and provider type
+        // Add the profile picture path to the user object
+        $profilePicturePath = asset('storage/' . $user->profile_photo_path);
+
+
+        // Return the user profile information as JSON response along with role, provider type, and profile picture path
         return response()->json([
             'user' => $user,
             'role' => $role,
             'providerType' => $providerType,
+            'profile_photo_path' => $profilePicturePath,
         ]);
     }
 
 
 
+
+
     public function updateProfilePicture(Request $request)
     {
-        // Validate and process the profile picture update
+        $user = Auth::user();
 
-        // Return the JSON response with the updated user data
-        return response()->json(['message' => 'Profile picture updated successfully']);
+        // Validate the request...
+        $validator = Validator::make($request->all(), [
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 400);
+        }
+
+        // Retrieve the profile picture file
+        $profilePicture = $request->file('profile_picture');
+
+        // Generate a unique filename for the profile picture
+        $filename = time() . '_' . $profilePicture->getClientOriginalName();
+
+        // Store the profile picture in the storage/app/public directory
+        $profilePicture->storeAs('profile_pictures', $filename, 'public');
+
+        // Update the profile_photo_path attribute of the user
+        $user->profile_photo_path = 'profile_pictures/'.$filename;
+
+
+        // Save the updated user model
+        $user->save();
+
+        // Return the JSON response with the success message
+        return response()->json(['success' => true, 'message' => 'Profile picture updated successfully']);
     }
+
 }
 

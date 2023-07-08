@@ -55,17 +55,14 @@
                 </button>
                 <button class="btn btn-primary ml-2" onclick="location.href='{{ route('login') }}'">Connexion</button>
             @endguest
-            @auth
-                <button class="btn btn-outline-primary me-2" onclick="location.href='{{ route('user.profile') }}'">
-                    Profile
-                </button>
-                    <button class="btn btn-primary ml-2" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                        Déconnexion
+                @auth
+                    <button class="btn btn-outline-primary me-2" onclick="location.href='{{ route('user.profile') }}'">
+                        Profile
                     </button>
-                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    <button class="btn btn-primary ml-2" onclick="confirmLogout();">Déconnexion</button>
+                    <form id="logout-form" action="{{ route('api.logout') }}" method="POST" style="display: none;">
                         @csrf
                     </form>
-
                 @endauth
         </div>
     </div>
@@ -108,10 +105,31 @@
     });
 
     function confirmLogout() {
-        if (confirm("Êtes-vous sure de vouloir vous déconnecter ?")) {
-            document.getElementById('logout-form').submit();
+        if (confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) {
+            fetch("{{ route('api.logout') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                },
+            })
+                .then((response) => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error("Logout failed.");
+                    }
+                })
+                .then((data) => {
+                    alert("Logout successful.");
+                    window.location.href = "{{ url('/') }}";
+                })
+                .catch((error) => {
+                    alert(error.message);
+                });
         }
     }
 </script>
+
 </body>
 </html>

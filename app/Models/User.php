@@ -102,19 +102,9 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $appends = [
-        'profile_photo_path',
+
     ];
 
-    public function getProfilePhotoPathAttribute()
-    {
-        // Logic to retrieve the profile photo path attribute
-        // Return the profile photo path
-    }
 
-    public function isProvider()
-    {
-        // Check if the user has a provider relationship
-        return $this->provider()->exists();
-    }
 
 }
