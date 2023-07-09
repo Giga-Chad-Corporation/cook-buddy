@@ -26,12 +26,9 @@ class User extends Authenticatable
         'password',
         'profile_photo_path',
         'api_token',
-        'house_number',
-        'street',
-        'postal_code',
-        'country',
+        'address',
         'phone',
-        'description'
+        'description',
     ];
 
 

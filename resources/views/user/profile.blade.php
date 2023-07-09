@@ -45,11 +45,10 @@
                                         </div>
                                         <div class="form-group">
                                             <label><strong>Adresse :</strong></label>
-                                            <input type="text" name="house_number" class="form-control" value="">
-                                            <input type="text" name="street" class="form-control" value="">
-                                            <input type="text" name="postal_code" class="form-control" value="">
-                                            <input type="text" name="country" class="form-control" value="">
+                                            <input type="text" name="address" id="autocomplete" class="form-control" placeholder="Enter your address">
+                                            <input type="hidden" name="formatted_address" id="formatted_address" value="">
                                         </div>
+
                                         <div class="form-group">
                                             <label><strong>Téléphone :</strong></label>
                                             <input type="text" name="phone" class="form-control" value="">
@@ -101,8 +100,20 @@
             </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
 
     <script>
+        function initializeAutocomplete() {
+            var autocompleteInput = document.getElementById('autocomplete');
+            var autocomplete = new google.maps.places.Autocomplete(autocompleteInput);
+
+            autocomplete.addListener('place_changed', function() {
+                var place = autocomplete.getPlace();
+
+                document.getElementById('formatted_address').value = place.address;
+            });
+        }
         document.addEventListener('DOMContentLoaded', function() {
             var profileForm = document.getElementById('profileForm');
             var editButton = document.getElementById('editButton');
@@ -125,7 +136,7 @@
                         document.getElementById('userName').innerText = 'Nom : ' + user.first_name + ' ' + user.last_name;
                         document.getElementById('userEmail').innerText = 'Email : ' + user.email;
                         document.getElementById('userUsername').innerText = 'Username : ' + user.username;
-                        document.getElementById('userAddress').innerText = 'Adresse : ' + user.house_number + ', ' + user.street + ', ' + user.postal_code + ', ' + user.country;
+                        document.getElementById('userAddress').innerText = 'Adresse : ' + user.address;
                         document.getElementById('userPhone').innerText = 'Téléphone : ' + user.phone;
                         document.getElementById('userDescription').innerText = 'Description : ' + user.description;
                         document.getElementById('userRole').innerText = 'Rôle : ' + role;
@@ -141,10 +152,7 @@
                         document.querySelector('input[name="last_name"]').value = user.value = user.last_name;
                         document.querySelector('input[name="email"]').value = user.email;
                         document.querySelector('input[name="username"]').value = user.username;
-                        document.querySelector('input[name="house_number"]').value = user.house_number;
-                        document.querySelector('input[name="street"]').value = user.street;
-                        document.querySelector('input[name="postal_code"]').value = user.postal_code;
-                        document.querySelector('input[name="country"]').value = user.country;
+                        document.querySelector('input[name="address"]').value = user.address;
                         document.querySelector('input[name="phone"]').value = user.phone;
                         document.querySelector('input[name="description"]').value = user.description;
 
@@ -195,10 +203,12 @@
             editButton.addEventListener('click', function() {
                 editButton.style.display = 'none';
                 saveButton.style.display = 'block';
+
                 var userInfoElements = document.getElementsByClassName('userInfo');
                 for (var i = 0; i < userInfoElements.length; i++) {
                     userInfoElements[i].style.display = 'none';
                 }
+
                 profileForm.style.display = 'block';
             });
 
@@ -244,13 +254,15 @@
                             successContainer.appendChild(successElement);
 
                             if (data.user) {
+
+                                console.log('Updated user:', user);
                                 var user = data.user;
 
                                 // Update user info on the page
                                 document.getElementById('userName').innerText = 'Nom : ' + user.first_name + ' ' + user.last_name;
                                 document.getElementById('userEmail').innerText = 'Email : ' + user.email;
                                 document.getElementById('userUsername').innerText = 'Username : ' + user.username;
-                                document.getElementById('userAddress').innerText = 'Adresse : ' + user.house_number + ', ' + user.street + ', ' + user.postal_code + ', ' + user.country;
+                                document.getElementById('userAddress').innerText = 'Adresse : ' + user.address;
                                 document.getElementById('userPhone').innerText = 'Téléphone : ' + user.phone;
                                 document.getElementById('userDescription').innerText = 'Description : ' + user.description;
 
@@ -259,16 +271,13 @@
                                 document.querySelector('input[name="last_name"]').value = '';
                                 document.querySelector('input[name="email"]').value = '';
                                 document.querySelector('input[name="username"]').value = '';
-                                document.querySelector('input[name="house_number"]').value = '';
-                                document.querySelector('input[name="street"]').value = '';
-                                document.querySelector('input[name="postal_code"]').value = '';
-                                document.querySelector('input[name="country"]').value = '';
+                                document.querySelector('input[name="address"]').value = '';
                                 document.querySelector('input[name="phone"]').value = '';
                                 document.querySelector('input[name="description"]').value = '';
                             }
 
                             // Redirect to the user's profile after 3 seconds
-                            setTimeout(function(){
+                            setTimeout(function() {
                                 window.location.href = "{{ route('user.profile') }}";
                             }, 2000);
                         }
@@ -276,5 +285,11 @@
                     .catch(error => console.log('Error:', error));
             });
         });
+
+        // Load Google Maps API asynchronously
+        var script = document.createElement('script');
+        script.src = 'https://maps.google.com/maps/api/js?key={{ $_ENV['GOOGLE_MAP_KEY'] }}&libraries=places&callback=initializeAutocomplete';
+        script.defer = true;
+        document.body.appendChild(script);
     </script>
 @endsection

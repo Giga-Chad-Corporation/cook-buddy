@@ -7,7 +7,6 @@ use App\Models\Provider;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class APIUserController extends Controller
@@ -27,12 +26,9 @@ class APIUserController extends Controller
             'first_name' => 'nullable|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'username' => 'nullable|string|max:255|unique:users,username,' . $user->id,
-            'house_number' => 'nullable|string|max:255',
-            'street' => 'nullable|string|max:255',
-            'postal_code' => 'nullable|string|max:255',
-            'country' => 'nullable|string|max:255',
             'phone' => 'nullable|numeric|digits_between:10,15',
             'description' => 'nullable|string|max:500',
+            'address' => 'nullable|string|max:255',
         ], $messages);
 
         if ($validator->fails()) {
@@ -40,23 +36,21 @@ class APIUserController extends Controller
         }
 
         // Retrieve the request data
-        $requestData = $request->only(['first_name', 'last_name', 'username', 'house_number', 'street', 'postal_code', 'country', 'phone', 'description']);
+        $requestData = $request->only(['first_name', 'last_name', 'username', 'phone', 'description', 'address']);
 
         // Update the user model
         $user->fill($requestData);
+
         $user->save();
 
-        // Return the JSON response with the success message
-        return response()->json(['message' => 'Profile updated successfully.']);
+        // Return the JSON response with the success message and updated user
+        return response()->json(['message' => 'Profile updated successfully.', 'user' => $user]);
     }
-
-
 
 
 
     public function showProfile(Request $request)
     {
-
         $user = Auth::user();
         $role = 'Client'; // Default role
         $providerType = null;
@@ -71,7 +65,6 @@ class APIUserController extends Controller
         // Add the profile picture path to the user object
         $profilePicturePath = asset('storage/' . $user->profile_photo_path);
 
-
         // Return the user profile information as JSON response along with role, provider type, and profile picture path
         return response()->json([
             'user' => $user,
@@ -80,10 +73,6 @@ class APIUserController extends Controller
             'profile_photo_path' => $profilePicturePath,
         ]);
     }
-
-
-
-
 
     public function updateProfilePicture(Request $request)
     {
@@ -110,13 +99,10 @@ class APIUserController extends Controller
         // Update the profile_photo_path attribute of the user
         $user->profile_photo_path = 'profile_pictures/'.$filename;
 
-
         // Save the updated user model
         $user->save();
 
         // Return the JSON response with the success message
         return response()->json(['success' => true, 'message' => 'Profile picture updated successfully']);
     }
-
 }
-

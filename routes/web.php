@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\FormationController;
+use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
@@ -37,5 +38,7 @@ Route::middleware(['web'])->group(function () {
     Route::get('/formation/lecon-en-ligne', [App\Http\Controllers\FormationController::class, 'leconEnLigne'])->name('formation.lecon-en-ligne');
     Route::get('/formation/ateliers', [App\Http\Controllers\FormationController::class, 'ateliers'])->name('formation.ateliers');
     Route::get('/formation/formations-professionnelles', [App\Http\Controllers\FormationController::class, 'formationsProfessionnelles'])->name('formation.formations-professionnelles');
+
+    Route::get('google-autocomplete', [GoogleController::class, 'google']);
 });
 
