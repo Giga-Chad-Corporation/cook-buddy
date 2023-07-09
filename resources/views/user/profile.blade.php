@@ -111,7 +111,11 @@
             var profilePictureInput = document.getElementById('profilePictureInput');
 
             // Fetch user profile data
-            fetch("{{ route('api.user.profile') }}")
+            fetch("{{ route('api.user.profile') }}", {
+                headers: {
+                    'Authorization': 'Bearer {{ auth()->user()->api_token }}',
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
                     if (data.user) {
