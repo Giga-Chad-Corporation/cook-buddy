@@ -21,11 +21,11 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('username')->unique();
             $table->text('description')->nullable();
-            $table->string('address')->nullable();
-            $table->string('api_token', 80)
-                ->unique()
-                ->nullable()
-                ->default(null);
+            $table->string('house_number')->nullable();
+            $table->string('street')->nullable();
+            $table->string('postal_code')->nullable();
+            $table->string('country')->nullable();
+            $table->string('api_token', 80)->unique()->nullable()->default(null);
             $table->string('profile_photo_path', 2048)->nullable();
             $table->rememberToken();
             $table->timestamps();
@@ -40,5 +40,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('users');
     }
-
 };

@@ -1,8 +1,8 @@
 <?php
 
+use App\Http\Controllers\FormationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
-use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,5 +29,13 @@ Route::middleware(['web'])->group(function () {
 
 
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [LoginController::class, 'login'])->name('login.process');
+    Route::get('logout', [LoginController::class, 'logout'])->name('logout');
+
+    Route::get('/formation', [FormationController::class, 'index'])->name('formation');
+    Route::get('/formation/cours-a-domicile', [App\Http\Controllers\FormationController::class, 'coursADomicile'])->name('formation.cours-a-domicile');
+    Route::get('/formation/lecon-en-ligne', [App\Http\Controllers\FormationController::class, 'leconEnLigne'])->name('formation.lecon-en-ligne');
+    Route::get('/formation/ateliers', [App\Http\Controllers\FormationController::class, 'ateliers'])->name('formation.ateliers');
+    Route::get('/formation/formations-professionnelles', [App\Http\Controllers\FormationController::class, 'formationsProfessionnelles'])->name('formation.formations-professionnelles');
 });
 

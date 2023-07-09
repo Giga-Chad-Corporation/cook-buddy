@@ -24,9 +24,10 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('api')->group(function () {
     Route::post('/register', [APIRegisterController::class, 'register'])->name('api.register');
     Route::post('login', [APILoginController::class, 'login'])->name('api.login');
-    Route::middleware('auth:api')->post('logout', [APILoginController::class, 'logout'])->name('api.logout');
+
 
     Route::middleware('auth:api')->group(function () {
+        Route::post('logout', [APILoginController::class, 'logout'])->name('api.logout');
         Route::get('/user/profile', [APIUserController::class, 'showProfile'])->name('api.user.profile');
         Route::patch('user/profile/update', [APIUserController::class, 'updateProfile'])->name('api.user.profile.update');
         Route::post('user/profile/picture', [APIUserController::class, 'updateProfilePicture'])->name('api.user.profile.picture');

@@ -29,12 +29,9 @@ class APILoginController extends Controller
 
     public function logout(Request $request)
     {
-
         $user = $request->user();
         $user->api_token = null;
         $user->save();
-
-        Auth::guard('web')->logout();
 
         return response()->json(['message' => 'Logout successful'], 200);
     }

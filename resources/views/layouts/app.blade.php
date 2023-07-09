@@ -35,7 +35,7 @@
                     <a class="nav-link" href="{{ url('/') }}">Acceuil</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('/training') }}">Formations</a>
+                    <a class="nav-link" href="{{ url('/formation') }}">Formations</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url('/events') }}">Événements</a>
@@ -49,21 +49,23 @@
             </ul>
         </div>
         <div class="d-flex">
+            @auth
+                <button id="profileButton" class="btn btn-outline-primary me-2" onclick="location.href='{{ route('user.profile') }}'">
+                    Profile
+                </button>
+                <button id="logoutButton" class="btn btn-primary ml-2" onclick="location.href='{{ route('logout') }}'">
+                    Déconnexion
+                </button>
+            @endauth
+
             @guest
-                <button class="btn btn-outline-primary me-2" onclick="location.href='{{ route('register') }}'">
+                <button id="registerButton" class="btn btn-outline-primary me-2" onclick="location.href='{{ route('register') }}'">
                     Inscription
                 </button>
-                <button class="btn btn-primary ml-2" onclick="location.href='{{ route('login') }}'">Connexion</button>
+                <button id="loginButton" class="btn btn-primary ml-2" onclick="location.href='{{ route('login.process') }}'">
+                    Connexion
+                </button>
             @endguest
-                @auth
-                    <button class="btn btn-outline-primary me-2" onclick="location.href='{{ route('user.profile') }}'">
-                        Profile
-                    </button>
-                    <button class="btn btn-primary ml-2" onclick="confirmLogout();">Déconnexion</button>
-                    <form id="logout-form" action="{{ route('api.logout') }}" method="POST" style="display: none;">
-                        @csrf
-                    </form>
-                @endauth
         </div>
     </div>
 </nav>
@@ -82,53 +84,12 @@
     <!-- Modal content goes here -->
 </div>
 
+
 <!-- Scripts -->
 <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let prevScrollPos = window.pageYOffset;
-        let navbar = document.querySelector(".navbar");
-        let headerHeight = navbar.offsetHeight;
 
-        window.addEventListener("scroll", function () {
-            let currentScrollPos = window.pageYOffset;
-
-            if (prevScrollPos > currentScrollPos) {
-                navbar.classList.remove("hidden");
-            } else if (currentScrollPos > headerHeight) {
-                navbar.classList.add("hidden");
-            }
-
-            prevScrollPos = currentScrollPos;
-        });
-    });
-
-    function confirmLogout() {
-        if (confirm("Êtes-vous sûr de vouloir vous déconnecter ?")) {
-            fetch("{{ route('api.logout') }}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
-                },
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        return response.json();
-                    } else {
-                        throw new Error("Logout failed.");
-                    }
-                })
-                .then((data) => {
-                    alert("Logout successful.");
-                    window.location.href = "{{ url('/') }}";
-                })
-                .catch((error) => {
-                    alert(error.message);
-                });
-        }
-    }
 </script>
 
 </body>
