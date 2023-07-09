@@ -27,27 +27,29 @@ class APIUserController extends Controller
             'first_name' => 'nullable|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'username' => 'nullable|string|max:255|unique:users,username,' . $user->id,
-            'address' => 'nullable|string|max:255',
+            'house_number' => 'nullable|string|max:255',
+            'street' => 'nullable|string|max:255',
+            'postal_code' => 'nullable|string|max:255',
+            'country' => 'nullable|string|max:255',
             'phone' => 'nullable|numeric|digits_between:10,15',
             'description' => 'nullable|string|max:500',
         ], $messages);
 
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
 
         // Retrieve the request data
-        $requestData = $request->only(['first_name', 'last_name', 'username', 'address', 'phone', 'description']);
+        $requestData = $request->only(['first_name', 'last_name', 'username', 'house_number', 'street', 'postal_code', 'country', 'phone', 'description']);
 
-        $user->update($requestData);
-
-
-        // Save the updated user model
+        // Update the user model
+        $user->fill($requestData);
         $user->save();
 
         // Return the JSON response with the success message
         return response()->json(['message' => 'Profile updated successfully.']);
     }
+
 
 
 

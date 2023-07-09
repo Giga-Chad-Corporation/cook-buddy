@@ -28,7 +28,7 @@
                                         @csrf
                                         @method('PATCH')
                                         <div class="d-flex justify-content-end">
-                                        <button type="submit" id="saveButton" class="btn btn-primary mb-3" style="display: none;">Enregistrer les modifications</button>
+                                            <button type="submit" id="saveButton" class="btn btn-primary mb-3" style="display: none;">Enregistrer les modifications</button>
                                         </div>
                                         <div class="form-group">
                                             <label><strong>Nom :</strong></label>
@@ -45,7 +45,10 @@
                                         </div>
                                         <div class="form-group">
                                             <label><strong>Adresse :</strong></label>
-                                            <input type="text" name="address" class="form-control" value="">
+                                            <input type="text" name="house_number" class="form-control" value="">
+                                            <input type="text" name="street" class="form-control" value="">
+                                            <input type="text" name="postal_code" class="form-control" value="">
+                                            <input type="text" name="country" class="form-control" value="">
                                         </div>
                                         <div class="form-group">
                                             <label><strong>Téléphone :</strong></label>
@@ -78,9 +81,6 @@
                                                 </div>
                                             @endif
                                         </div>
-
-
-
                                     </form>
 
                                     <p class="card-text" id="userRole"></p>
@@ -93,7 +93,6 @@
                                     <p id="userDescription" class="userInfo"></p>
 
                                     <div id="message" class="alert alert-success" style="display: none;"></div>
-
                                 </div>
                             </div>
                         </div>
@@ -126,7 +125,7 @@
                         document.getElementById('userName').innerText = 'Nom : ' + user.first_name + ' ' + user.last_name;
                         document.getElementById('userEmail').innerText = 'Email : ' + user.email;
                         document.getElementById('userUsername').innerText = 'Username : ' + user.username;
-                        document.getElementById('userAddress').innerText = 'Adresse : ' + user.address;
+                        document.getElementById('userAddress').innerText = 'Adresse : ' + user.house_number + ', ' + user.street + ', ' + user.postal_code + ', ' + user.country;
                         document.getElementById('userPhone').innerText = 'Téléphone : ' + user.phone;
                         document.getElementById('userDescription').innerText = 'Description : ' + user.description;
                         document.getElementById('userRole').innerText = 'Rôle : ' + role;
@@ -139,10 +138,13 @@
                         }
 
                         document.querySelector('input[name="first_name"]').value = user.first_name;
-                        document.querySelector('input[name="last_name"]').value = user.last_name;
+                        document.querySelector('input[name="last_name"]').value = user.value = user.last_name;
                         document.querySelector('input[name="email"]').value = user.email;
                         document.querySelector('input[name="username"]').value = user.username;
-                        document.querySelector('input[name="address"]').value = user.address;
+                        document.querySelector('input[name="house_number"]').value = user.house_number;
+                        document.querySelector('input[name="street"]').value = user.street;
+                        document.querySelector('input[name="postal_code"]').value = user.postal_code;
+                        document.querySelector('input[name="country"]').value = user.country;
                         document.querySelector('input[name="phone"]').value = user.phone;
                         document.querySelector('input[name="description"]').value = user.description;
 
@@ -168,6 +170,9 @@
                 formData.append('_token', '{{ csrf_token() }}');
 
                 fetch("{{ route('api.user.profile.picture') }}", {
+                    headers: {
+                        'Authorization': 'Bearer {{ auth()->user()->api_token }}',
+                    },
                     method: 'POST',
                     body: formData
                 })
@@ -206,6 +211,9 @@
                 formData.append('_token', '{{ csrf_token() }}');
 
                 fetch("{{ route('api.user.profile.update') }}", {
+                    headers: {
+                        'Authorization': 'Bearer {{ auth()->user()->api_token }}',
+                    },
                     method: 'POST',
                     body: formData
                 })
@@ -213,10 +221,9 @@
                     .then(data => {
                         console.log('Success:', data);
 
-
                         if (data.errors) {
                             // Display console errors
-                            console.log('Registration failed:', data.errors);
+                            console.log('Profile update failed:', data.errors);
                             // Display form validation errors
                             const errorMessages = Object.values(data.errors).flat();
                             const errorContainer = document.getElementById('error-container');
@@ -243,7 +250,7 @@
                                 document.getElementById('userName').innerText = 'Nom : ' + user.first_name + ' ' + user.last_name;
                                 document.getElementById('userEmail').innerText = 'Email : ' + user.email;
                                 document.getElementById('userUsername').innerText = 'Username : ' + user.username;
-                                document.getElementById('userAddress').innerText = 'Adresse : ' + user.address;
+                                document.getElementById('userAddress').innerText = 'Adresse : ' + user.house_number + ', ' + user.street + ', ' + user.postal_code + ', ' + user.country;
                                 document.getElementById('userPhone').innerText = 'Téléphone : ' + user.phone;
                                 document.getElementById('userDescription').innerText = 'Description : ' + user.description;
 
@@ -252,7 +259,10 @@
                                 document.querySelector('input[name="last_name"]').value = '';
                                 document.querySelector('input[name="email"]').value = '';
                                 document.querySelector('input[name="username"]').value = '';
-                                document.querySelector('input[name="address"]').value = '';
+                                document.querySelector('input[name="house_number"]').value = '';
+                                document.querySelector('input[name="street"]').value = '';
+                                document.querySelector('input[name="postal_code"]').value = '';
+                                document.querySelector('input[name="country"]').value = '';
                                 document.querySelector('input[name="phone"]').value = '';
                                 document.querySelector('input[name="description"]').value = '';
                             }
@@ -266,6 +276,5 @@
                     .catch(error => console.log('Error:', error));
             });
         });
-
     </script>
 @endsection
