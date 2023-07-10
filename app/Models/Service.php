@@ -33,5 +33,10 @@ class Service extends Model
         return $this->hasMany('App\Models\Offer');
     }
 
+    public function buildings()
+    {
+        return $this->belongsToMany(Building::class, 'service_building');
+    }
+
 
 }

@@ -13,6 +13,8 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
+
+
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
@@ -24,7 +26,7 @@ class LoginController extends Controller
             $user->api_token = Str::random(60);
             $user->save();
             // Authentication passed...
-            return redirect()->intended('/');
+            return redirect('/');
         }
 
         // Authentication failed...

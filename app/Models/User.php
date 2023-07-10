@@ -36,19 +36,15 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Service::class);
     }
-    public function food_orders()
+    public function orders()
     {
-        return $this->hasMany(FoodOrder::class);
+        return $this->hasMany(Order::class);
     }
     public function provider()
     {
         return $this->hasOne(Provider::class);
     }
 
-    public function reportTickets()
-    {
-        return $this->hasMany(ReportTicket::class);
-    }
 
     public function reviewedServices()
     {
@@ -62,11 +58,6 @@ class User extends Authenticatable
         return $this->belongsToMany(Provider::class, 'messages')
             ->withPivot('message_content')
             ->withTimestamps();
-    }
-
-    public function regions()
-    {
-        return $this->hasMany(Region::class);
     }
 
     public function relatedUsers()

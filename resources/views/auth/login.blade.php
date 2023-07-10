@@ -66,30 +66,5 @@
     </div>
 
     <script>
-        {{--document.getElementById('loginForm').addEventListener('submit', function (e) {--}}
-        {{--    e.preventDefault();--}}
-        {{--    fetch('{{ route('api.login') }}', {--}}
-        {{--        method: 'POST',--}}
-        {{--        headers: {--}}
-        {{--            'Content-Type': 'application/json',--}}
-        {{--            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')--}}
-        {{--        },--}}
-        {{--        body: JSON.stringify({--}}
-        {{--            email: document.getElementById('email').value,--}}
-        {{--            password: document.getElementById('password').value,--}}
-        {{--            remember: document.getElementById('remember').checked,--}}
-        {{--        })--}}
-        {{--    }).then(response => {--}}
-        {{--        if (!response.ok) {--}}
-        {{--            throw new Error('Login failed.');--}}
-        {{--        }--}}
-        {{--        return response.json();--}}
-        {{--    }).then(data => {--}}
-        {{--        alert('Login successful.');--}}
-        {{--        window.location.href = "{{ route('home') }}";--}}
-        {{--    }).catch(error => {--}}
-        {{--        alert(error.message);--}}
-        {{--    });--}}
-        {{--});--}}
     </script>
 @endsection

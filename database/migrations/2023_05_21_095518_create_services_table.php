@@ -16,6 +16,7 @@ return new class extends Migration
             $table->timestamp('start_date_time')->useCurrent();
             $table->timestamp('end_date_time')->nullable();
             $table->text('description')->nullable();
+            $table->unsignedInteger('number_places')->default(1);
             $table->timestamps();
         });
     }

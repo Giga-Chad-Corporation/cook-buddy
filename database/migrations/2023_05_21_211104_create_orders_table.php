@@ -11,19 +11,20 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('regions', function (Blueprint $table) {
+        Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('champ');
+            $table->timestamp('planned_delivery_date')->nullable();
+            $table->timestamp('real_delivery_date')->nullable();
+            $table->string('status')->nullable();
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('regions');
+        Schema::dropIfExists('orders');
     }
 };
