@@ -11,22 +11,21 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('report_tickets', function (Blueprint $table) {
+        Schema::create('quotes', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->text('description');
-            $table->string('content_type')->nullable();
-            $table->unsignedBigInteger('content_id')->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('provider_id')->constrained()->onDelete('cascade');
+            $table->foreignId('service_id')->constrained()->onDelete('cascade');
+            $table->decimal('estimated_cost', 8, 2);
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('report_tickets');
+        Schema::dropIfExists('quotes');
     }
 };

@@ -61,6 +61,16 @@ class Provider extends Model
         return $this->hasMany('App\Models\Offer');
     }
 
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function quotes()
+    {
+        return $this->hasMany(Quote::class);
+    }
+
 
 
 }

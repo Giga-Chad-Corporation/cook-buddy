@@ -60,11 +60,19 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    public function relatedUsers()
+    public function subscriptions()
     {
-        return $this->belongsToMany(User::class, 'relation_table')
-            ->withPivot('content', 'rate', 'picture_url')
-            ->withTimestamps();
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function quotes()
+    {
+        return $this->hasMany(Quote::class);
     }
     /**
      * The attributes that should be hidden for serialization.
