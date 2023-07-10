@@ -34,5 +34,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             DocumentTypeSeeder::class,
         ]);
+
+        $this->call([
+            ServiceTypeSeeder::class,
+        ]);
     }
 }

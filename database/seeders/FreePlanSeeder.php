@@ -26,7 +26,8 @@ class FreePlanSeeder extends Seeder
         $freePlan->boutique_free_shipping = false;
         $freePlan->has_cooking_space = false;
         $freePlan->invitation_to_events = false;
-        $freePlan->referral_reward = false;
+        $freePlan->renewal_discount = null;
+
         $freePlan->save();
     }
 }

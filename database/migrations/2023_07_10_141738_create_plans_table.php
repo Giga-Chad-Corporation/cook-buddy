@@ -19,17 +19,13 @@ class CreatePlansTable extends Migration
             $table->float('annual_price')->nullable();
             $table->boolean('has_ads')->default(false);
             $table->boolean('can_comment')->default(false);
-            $table->unsignedInteger('lesson_access')->default(0);
+            $table->unsignedInteger('lesson_access')->nullable()->default(0);
             $table->boolean('has_chat_access')->default(false);
             $table->integer('boutique_discount')->default(0);
             $table->boolean('boutique_free_shipping')->default(false);
             $table->boolean('has_cooking_space')->default(false);
             $table->boolean('invitation_to_events')->default(false);
-            $table->boolean('referral_reward')->default(false);
-            $table->float('referral_reward_value')->nullable();
-            $table->string('referral_reward_condition')->nullable();
-            $table->integer('referral_reward_condition_value')->nullable();
-            $table->json('referral_reward_excluded_plans')->nullable();
+            $table->integer('renewal_discount')->nullable()->default(null);
             $table->timestamps();
         });
     }
