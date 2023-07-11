@@ -4,9 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Provider;
+use App\Models\Service;
+use App\Models\ServiceType;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class APIUserController extends Controller
@@ -73,6 +76,56 @@ class APIUserController extends Controller
             'profile_photo_path' => $profilePicturePath,
         ]);
     }
+    public function AllUsers(Request $request)
+    {
+        $users = User::all();
+        return response()->json(['users' => $users]);
+    }
+    public function Top5FidelUsers(Request $request)
+    {
+        $users = User::orderBy('fidelity', 'desc')->take(5)->get();
+        return response()->json(['users' => $users]);
+    }
+
+    function EventPourcentageByType()
+    {
+
+        $totalServices = Service::count();
+
+        $serviceStats = Service::with('serviceType')
+            ->get()
+            ->groupBy('serviceType.type_name')
+            ->map(function ($services, $type) use ($totalServices) {
+                return [
+                    'type' => $type,
+                    'total' => count($services),
+                    'percentage' => (count($services) / $totalServices) * 100,
+                ];
+            })
+            ->values();
+
+        return response()->json($serviceStats);
+
+    }
+function EventPourcentageByFrequency(){
+
+    $totalServices = Service::count();
+
+    $serviceStats = Service::select(DB::raw('DATE(start_date_time) as date'), DB::raw('count(*) as total'))
+        ->groupBy('date')
+        ->orderBy('date')
+        ->get()
+        ->map(function ($item) use ($totalServices) {
+            $item->percentage = ($item->total / $totalServices) * 100;
+            return $item;
+        });
+
+    return response()->json($serviceStats);
+
+}
+    function Top5event(){}
+
+
 
     public function updateProfilePicture(Request $request)
     {
