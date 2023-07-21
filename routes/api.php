@@ -25,10 +25,11 @@ Route::middleware('api')->group(function () {
     Route::post('/register', [APIRegisterController::class, 'register'])->name('api.register');
     Route::post('login', [APILoginController::class, 'login'])->name('api.login');
     Route::post('email',[\App\Http\Controllers\MailController ::class,'sendEmail'])->name('api.sendEmail');
-    Route::get('/user/services', [APIUserController::class, 'getServices'])->name('api.user.services');
+
 
 
     Route::middleware('auth:api')->group(function () {
+        Route::get('/user/services', [APIUserController::class, 'getServices'])->name('api.user.services');
         Route::post('logout', [APILoginController::class, 'logout'])->name('api.logout');
         Route::get('/user/profile', [APIUserController::class, 'showProfile'])->name('api.user.profile');
         Route::patch('user/profile/update', [APIUserController::class, 'updateProfile'])->name('api.user.profile.update');

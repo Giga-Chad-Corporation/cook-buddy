@@ -320,7 +320,11 @@
         });
 
         // Replace 'api.user.services' with the actual URL of your endpoint if necessary.
-        fetch("{{ route('api.user.services') }}")
+        fetch("{{ route('api.user.services') }}", {
+            headers: {
+                'Authorization': 'Bearer {{ auth()->user()->api_token }}',
+            }
+        })
             .then(response => response.json())
             .then(data => {
                 const services = data.services;
