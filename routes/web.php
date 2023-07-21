@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\EventsController;
+use App\Http\Controllers\FoodController;
 use App\Http\Controllers\FormationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StripeController;
@@ -16,6 +18,10 @@ Route::middleware(['web'])->group(function () {
     Route::get('register', function () {
         return view('auth.register');
     })->name('register');
+
+    Route::get('shop', function () {
+        return view('shop');
+    })->name('shop');
 
     Route::get('user/profile', function () {
         return view('user.profile');
@@ -40,6 +46,9 @@ Route::middleware(['web'])->group(function () {
     Route::get('/payment/success/{planId}', [StripeController::class, 'success'])->name('payment.success');
     Route::get('/payment/cancel', [StripeController::class, 'cancel'])->name('payment.cancel');
     Route::get('subscribe/free/{planId}', [PlanController::class, 'subscribeFree'])->name('subscribe.free');
+
+    Route::get('/shop/food', [FoodController::class, 'index'])->name('shop.food');
+    Route::get('/shop/material', [MaterialController::class, 'index'])->name('shop.material');
 
     Route::get('/events', [EventsController::class, 'index'])->name('events.index');
 });
