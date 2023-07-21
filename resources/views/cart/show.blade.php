@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1>Mon Panier</h1>
+        <h1 class="mt-5 mb-5">Mon Panier</h1>
 
         <div class="row">
             @foreach($cartItems as $item)
