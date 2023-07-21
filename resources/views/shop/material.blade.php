@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1>Material Shop</h1>
+        <h1 class="mt-5 mb-5">Achetez du matériel de cuisine</h1>
 
         <div class="row">
             @foreach($items as $item)
