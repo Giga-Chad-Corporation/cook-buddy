@@ -10,13 +10,16 @@ use Illuminate\Support\Facades\DB;
 
 class ShopController extends Controller
 {
-    public function addToCart($id)
+    public function addToCart(Request $request, $id)
     {
         $item = Item::find($id);
 
         if (!$item) {
-            abort(404);
+            return response()->json(['error' => 'Article indisponible'], 404);
         }
+
+        // Get the quantity value from the request, use 1 as a default if not provided
+        $itemQuantity = $request->input('quantity', 1);
 
         $user = Auth::user();
         $order = Order::where('user_id', $user->id)->where('status', 'pending')->first();
@@ -33,10 +36,12 @@ class ShopController extends Controller
         $quantity = $order->items()->where('item_id', $id)->first()->pivot->quantity ?? 0;
 
         // Add or increment item in order
-        $order->items()->syncWithoutDetaching([$id => ['quantity' => $quantity + 1]]);
+        $order->items()->syncWithoutDetaching([$id => ['quantity' => $quantity + $itemQuantity]]);
 
-        return redirect()->back()->with('success', 'Item added to cart successfully!');
+        // Return a JSON response for the fetch() API in your JavaScript
+        return response()->json(['success' => 'Article ajouté au panier !'], 200);
     }
+
 
 
 
@@ -62,7 +67,40 @@ class ShopController extends Controller
         return view('cart.show', compact('cartItems'));
     }
 
+    public function removeFromCart($id)
+    {
+        $user = Auth::user();
+        $order = Order::where('user_id', $user->id)->where('status', 'pending')->first();
 
+        if (!$order) {
+            return response()->json(['error' => 'No active cart found'], 404);
+        }
+
+        // Get the item to be removed from the order
+        $item = $order->items()->where('item_id', $id)->first();
+
+        if (!$item) {
+            return response()->json(['error' => 'Item not found in cart'], 404);
+        }
+
+        // Check the quantity of the item in the order
+        $quantity = $order->items()->where('item_id', $id)->first()->pivot->quantity;
+
+        if ($quantity > 1) {
+            // If the quantity is more than 1, decrease it by 1
+            $order->items()->updateExistingPivot($id, ['quantity' => $quantity - 1]);
+        } else {
+            // If the quantity is 1 or less, detach the item from the order
+            $order->items()->detach($id);
+        }
+
+        if ($quantity <= 1) {
+            $order->items()->detach($id);
+            return response()->json(['success' => 'Article supprimé'], 200);
+        }
+
+        return response()->json(['success' => 'Quantité mise à jour'], 200);
+    }
 
 
 }
