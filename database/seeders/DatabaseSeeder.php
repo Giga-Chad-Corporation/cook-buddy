@@ -41,7 +41,24 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call([
-            RoomSeeder::class,
+            BuildingTypesSeeder::class,
+            BuildingsSeeder::class,
+        ]);
+
+        $this->call([
+            RoomTypesSeeder::class,
+        ]);
+
+        $this->call([
+            RoomsSeeder::class,
+        ]);
+
+        $this->call([
+            ItemTypesTableSeeder::class,
+        ]);
+
+        $this->call([
+            ItemsTableSeeder::class,
         ]);
     }
 }

@@ -34,4 +34,9 @@ class Building extends Model
     {
         return $this->belongsToMany(Service::class, 'service_building');
     }
+
+    public function buildingType()
+    {
+        return $this->belongsTo(BuildingType::class);
+    }
 }
