@@ -15,7 +15,11 @@ return new class extends Migration
             $table->id();
             $table->timestamp('start_date_time')->useCurrent();
             $table->timestamp('end_date_time')->nullable();
+            $table->text('title')->nullable();
             $table->text('description')->nullable();
+            $table->unsignedInteger('number_places')->default(1);
+            $table->string('picture')->nullable();
+            $table->decimal('cost', 8, 2);  // add the cost field
             $table->timestamps();
         });
     }

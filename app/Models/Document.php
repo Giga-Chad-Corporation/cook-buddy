@@ -11,7 +11,9 @@ class Document extends Model
 
     protected $fillable = [
         'url',
-        'is_valid'
+        'is_valid',
+        'document_type_id',
+        'provider_id',
     ];
 
     public function provider()
@@ -24,10 +26,6 @@ class Document extends Model
         return $this->belongsTo(DocumentType::class);
     }
 
-    public function admin()
-    {
-        return $this->belongsTo(Admin::class);
-    }
 
 
 

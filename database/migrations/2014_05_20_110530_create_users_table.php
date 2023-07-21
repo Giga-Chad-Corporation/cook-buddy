@@ -22,11 +22,9 @@ return new class extends Migration
             $table->string('username')->unique();
             $table->text('description')->nullable();
             $table->string('address')->nullable();
-            $table->string('api_token', 80)
-                ->unique()
-                ->nullable()
-                ->default(null);
+            $table->string('api_token', 80)->unique()->nullable()->default(null);
             $table->string('profile_photo_path', 2048)->nullable();
+            $table->boolean('is_admin')->default(false); // Add the is_admin column
             $table->rememberToken();
             $table->timestamps();
         });
@@ -40,5 +38,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('users');
     }
-
 };
