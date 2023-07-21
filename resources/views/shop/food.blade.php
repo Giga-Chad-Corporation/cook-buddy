@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="container">
-        <h1 class="mt-5 mb-5">Commandez nos plat cuisiniés</h1>
+        <h1 class="mt-5 mb-5">Commandez nos plat cuisinés</h1>
 
         <div class="row">
             @foreach($items as $item)
@@ -19,7 +19,7 @@
                                 <p class="card-text">{{ $item->selling_price }}$</p>
                             </div>
                             <!-- Add to Cart button -->
-                            {{-- <a href="{{ route('add.to.cart', $item->id) }}" class="btn btn-primary">Add to Cart</a> --}}
+                            <a href="{{ route('add.to.cart', $item->id) }}" class="btn btn-primary">Add to Cart</a>
                         </div>
                     </div>
                 </div>

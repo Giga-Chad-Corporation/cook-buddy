@@ -8,6 +8,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ShopController;
 use App\Http\Controllers\StripeController;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +50,10 @@ Route::middleware(['web'])->group(function () {
 
     Route::get('/shop/food', [FoodController::class, 'index'])->name('shop.food');
     Route::get('/shop/material', [MaterialController::class, 'index'])->name('shop.material');
+    Route::get('/add-to-cart/{id}', [ShopController::class, 'addToCart'])->name('add.to.cart');
+    Route::get('/cart', [ShopController::class, 'showCart'])->name('cart.show');
+
+
 
     Route::get('/events', [EventsController::class, 'index'])->name('events.index');
 });

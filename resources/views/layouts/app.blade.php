@@ -53,7 +53,7 @@
         </div>
         <div class="d-flex">
             @auth
-                <button id="cartButton" class="btn btn-outline-primary mr-2">
+                <button id="cartButton" class="btn btn-outline-primary mr-2" onclick="location.href='{{ route('cart.show') }}'">
                     <img src="{{ asset('images/cart.svg') }}" alt="Panier" style="width:20px;"/>
                 </button>
                 <button id="profileButton" class="btn btn-outline-primary me-2"
