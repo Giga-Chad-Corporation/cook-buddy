@@ -12,7 +12,7 @@
                             <h5 class="card-title">{{ $item->model_name }}</h5>
                             <p class="card-text">{{ $item->selling_price }}$</p>
                             <!-- Add to Cart button -->
-                            <a href="{{ route('add.to.cart', $item->id) }}" class="btn btn-primary">Add to Cart</a>
+{{--                            <a href="{{ route('add.to.cart', $item->id) }}" class="btn btn-primary">Add to Cart</a>--}}
                         </div>
                     </div>
                 </div>
