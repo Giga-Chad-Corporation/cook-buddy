@@ -3,15 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Ramsey\Uuid\Type\Integer;
 
 class AdminController extends Controller
 {
     public function index()
     {
+        session()->forget('error');
+
         if (Auth::guard("admin")->check()) {
             return view('admin.index');
         }
@@ -36,6 +41,7 @@ class AdminController extends Controller
 
             session(['isAdmin' => true]);
 
+
             Auth::guard('admin')->login($admin);
 
             return redirect('/admin');
@@ -47,8 +53,30 @@ class AdminController extends Controller
 
     public function users()
     {
-        $users = User::all();
-        return view('admin.users', compact('users'));
+        session()->forget('error');
+
+        $admin = Auth::guard('admin')->user();
+        if ($admin->is_super_admin || $admin->manage_users) {
+            $users = User::all();
+            return view('admin.users', compact('users'));
+        } else {
+            session()->put('error', 'Vous n\'avez pas les droits pour accéder à cette page.');
+            return view('admin.users');
+        }
+    }
+
+    public function deleteUser(Request $request)
+    {
+        $admin = Auth::guard('admin')->user();
+        if ($admin->is_super_admin || $admin->manage_users) {
+            return $request->query();
+            $user = User::find($request->id);
+            $user->delete();
+            return redirect()->route('admin.users');
+        } else {
+            session()->put('error', 'Vous n\'avez pas les droits pour accéder à cette page.');
+            return view('admin.users');
+        }
     }
 
 }

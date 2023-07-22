@@ -14,15 +14,9 @@
                             <div class="alert alert-danger">
                                 {{ session('error') }}
                             </div>
+                        @else
+                            Bienvenue sur la page d'administration !
                         @endif
-
-                        @if (session('success'))
-                            <div class="alert alert-success">
-                                {{ session('success') }}
-                            </div>
-                        @endif
-
-                        Bienvenue sur la page d'administration !
                     </div>
                 </div>
             </div>

@@ -29,6 +29,7 @@ Route::middleware(['web'])->group(function () {
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
     Route::post('/cmadlog', [AdminController::class, 'login'])->name('admin.login');
     Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+    Route::delete('/admin/users', [AdminController::class, 'deleteUser'])->name('admin.users.destroy');
 
     Route::get('/formation', [FormationController::class, 'index'])->name('formation');
     Route::get('/formation/cours-a-domicile', [ServiceController::class, 'createCoursADomicile'])->name('formation.cours-a-domicile');
