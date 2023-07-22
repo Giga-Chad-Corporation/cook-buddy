@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('providers', function (Blueprint $table) {
             $table->id();
             $table->float('revenue')->default(0);
+            $table->boolean('is_profile_complete')->default(false);
             $table->timestamps();
         });
     }
