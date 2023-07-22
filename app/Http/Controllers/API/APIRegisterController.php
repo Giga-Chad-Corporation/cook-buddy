@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Mail\VerificationEmail;
 use App\Models\Plan;
 use App\Models\Subscription;
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Provider;
 use App\Models\ProviderType;
 use App\Models\Document;
 use App\Models\DocumentType;
+use Mail;
 
 class APIRegisterController extends Controller
 {
@@ -47,10 +52,11 @@ class APIRegisterController extends Controller
             'phone' => $request->input('phone'),
             'email_verified_at' => null // the email is not yet verified
         ]);
-
-        // Here you could trigger an email to the user with a verification link
-        // You might want to create a unique token, save it to the database,
-        // and send it to the user so you can validate it when they click on the verification link.
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify', now()->addMinutes(60), ['id' => $user->id, 'hash' => sha1($user->email)]
+        );
+        // Send the verification email
+        Mail::to($user->email)->send(new VerificationEmail($verificationUrl));
 
         if ($request->input('is_provider')) {
             $providerType = ProviderType::find($request->input('provider_type'));
@@ -95,8 +101,46 @@ class APIRegisterController extends Controller
         }
 
         return response()->json([
-            'message' => 'Inscrit avec succès !',
+            'message' => 'Inscrit avec succÃ¨s !',
             'user' => $user
         ], 201);
+    }
+    public function verify($id, $hash, Request $request)
+    {
+        $expires = $request->get('expires');
+
+        if ($expires <= now()->timestamp) {
+            throw new AuthorizationException('Verification link expired.');
+        }
+
+        $user = User::find($id);
+        if (! $user || ! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
+            throw new AuthorizationException;
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json('Email already verified.', 422);
+        }
+
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
+
+        return response()->json('Email verified successfully.');
+    }
+    public function showVerificationNotice()
+    {
+        // Check if user is logged in
+        if (!auth()->check()) {
+            return response()->json('User not logged in.', 401);
+        }
+
+        // Check if user has verified email
+        if (auth()->user()->hasVerifiedEmail()) {
+            return response()->json('Email already verified.', 200);
+        }
+
+        // If user is not verified, send a response or redirect them to a front-end page
+        return response()->json('Email not verified.', 403);
     }
 }
