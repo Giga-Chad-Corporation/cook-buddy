@@ -65,11 +65,10 @@ class AdminController extends Controller
         }
     }
 
-    public function deleteUser(Request $request)
+    public function deleteUser(Request $request, int $id)
     {
         $admin = Auth::guard('admin')->user();
         if ($admin->is_super_admin || $admin->manage_users) {
-            return $request->query();
             $user = User::find($request->id);
             $user->delete();
             return redirect()->route('admin.users');
