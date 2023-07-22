@@ -101,7 +101,7 @@ class APIRegisterController extends Controller
         }
 
         return response()->json([
-            'message' => 'Inscrit avec succÃ¨s !',
+            'message' => 'Inscrit avec succes ! Veuillez vérifier votre e-mail !',
             'user' => $user
         ], 201);
     }
