@@ -10,18 +10,22 @@ use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StripeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\APIRegisterController;
 
 Route::middleware(['web'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/email/verify', [APIRegisterController::class, 'showVerificationNotice'])->name('verification.notice');
+    Route::get('/email/verify/{id}/{hash}', [APIRegisterController::class, 'verify'])->name('verification.verify');
 
 
-    Route::get('register', function () {
-        return view('auth.register');
-    })->name('register');
+        Route::get('register', function () {
+            return view('auth.register');
+        })->name('register');
 
-    Route::get('shop', function () {
-        return view('shop');
-    })->name('shop');
+
+        Route::get('shop', function () {
+            return view('shop');
+        })->name('shop');
 
     Route::get('user/profile', function () {
         return view('user.profile');
@@ -30,8 +34,6 @@ Route::middleware(['web'])->group(function () {
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('login', [LoginController::class, 'login'])->name('login.process');
     Route::get('logout', [LoginController::class, 'logout'])->name('logout');
-
-
 
     Route::get('/formation', [FormationController::class, 'index'])->name('formation');
     Route::get('/formation/cours-a-domicile', [ServiceController::class, 'createCoursADomicile'])->name('formation.cours-a-domicile');

@@ -1,14 +1,14 @@
 @component('mail::message')
-    # Verifiez votre adresse email
+    # Email Verification
 
-    Ciliquez sur le boutton ci-dessous pour vérifier votre adresse email :
+    Please click the button below to verify your email address.
 
-    @component('mail::button', ['url' => $verificationLink])
-        Vérifier mon adresse email
+    @component('mail::button', ['url' => $verificationUrl])
+        Verify Email
     @endcomponent
 
-    Si vous n'avez pas créer de compte il n'y a rien à faire.
+    If you did not create an account, no further action is required.
 
-    Merci,<br>
+    Thanks,<br>
     {{ config('app.name') }}
 @endcomponent
