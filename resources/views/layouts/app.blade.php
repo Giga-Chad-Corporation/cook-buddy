@@ -63,12 +63,21 @@
             @endauth
 
             @guest
-                <button id="registerButton" class="btn btn-outline-primary me-2" onclick="location.href='{{ route('register') }}'">
-                    Inscription
-                </button>
-                <button id="loginButton" class="btn btn-primary ml-2" onclick="location.href='{{ route('login.process') }}'">
-                    Connexion
-                </button>
+                @if(session('isAdmin'))
+                    <button id="adminButton" class="btn btn-outline-primary me-2" onclick="location.href='{{ route('admin.index') }}'">
+                        Admin
+                    </button>
+                    <button id="logoutButton" class="btn btn-primary ml-2" onclick="location.href='{{ route('logout') }}'">
+                        Déconnexion
+                    </button>
+                @else
+                    <button id="registerButton" class="btn btn-outline-primary me-2" onclick="location.href='{{ route('register') }}'">
+                        Inscription
+                    </button>
+                    <button id="loginButton" class="btn btn-primary ml-2" onclick="location.href='{{ route('login.process') }}'">
+                        Connexion
+                    </button>
+                @endif
             @endguest
         </div>
     </div>
