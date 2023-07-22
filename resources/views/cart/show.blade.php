@@ -2,29 +2,28 @@
 
 @section('content')
     <div class="container">
-        <h1 class="mt-5 mb-5">Achetez du matériel de cuisine</h1>
+        <h1 class="mt-5 mb-5">Mon Panier</h1>
 
         <!-- Message container -->
         <div id="message" class="alert d-none"></div>
 
-        <div class="row">
-            @foreach($items as $item)
-                <div class="col-md-4">
-                    <div class="card mb-4 h-100">
-                        <!-- Add image here -->
-                        <img src="{{ $item->picture_url }}" class="card-img-top card-img" alt="{{ $item->model_name }}">
 
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <!-- Title at the left below the image -->
-                                <h5 class="card-title">{{ $item->model_name }}</h5>
-                                <!-- Price at the right below the image -->
-                                <p class="card-text">{{ $item->selling_price }}€</p>
+        <div class="row">
+            @foreach($cartItems as $item)
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm h-100" style="height:100%;">
+                        <img class="card-img-top card-img" src="{{ asset($item->picture_url) }}" alt="Card image cap">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">{{ $item->model_name }}</h5>
+                            <!-- Include Quantity -->
+                            <p class="card-text">Quantité : {{ $item->quantity }}</p>
+                            <div class="mt-auto">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <button type="button" class="btn btn-sm btn-outline-danger delete-item" data-id="{{ $item->id }}">Supprimer</button>
+
+                                    <p class="text-right">{{ number_format($item->selling_price * $item->quantity, 2) }} €</p>
+                                </div>
                             </div>
-                            <!-- Add to Cart button -->
-                            <button class="btn btn-primary add-to-cart" data-id="{{ $item->id }}">Ajouter au panier</button>
-                            <!-- View Item button -->
-                            <a href="{{ route('item.show', $item->id) }}" class="btn btn-secondary">Voir l'article</a>
                         </div>
                     </div>
                 </div>
@@ -34,31 +33,24 @@
     </div>
 
     <script>
-        // Add to Cart functionality
-        let addToCartButtons = document.querySelectorAll('.add-to-cart');
-
-        addToCartButtons.forEach(button => {
+        document.querySelectorAll('.delete-item').forEach(function(button) {
             button.addEventListener('click', function(event) {
                 event.preventDefault();
 
-                let itemId = this.getAttribute('data-id');
-                let quantity = 1; // Change this if you want to add quantity selector for each item
+                let itemId = this.dataset.id;
 
-                // Make a request to the server to add the item to the cart.
-                fetch('/add-to-cart/' + itemId, { // Update the route here
-                    method: 'POST',
+                // Make a DELETE request to the server to remove the item from the cart.
+                fetch(`/cart/remove/${itemId}`, {
+                    method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Authorization': 'Bearer {{ Auth::user()->api_token }}', // Include the user's API token
                     },
-                    body: JSON.stringify({
-                        quantity: quantity
-                    })
                 })
                     .then(response => {
                         if (!response.ok) {
-                            throw response; // If the response is not ok, throw an error
+                            throw response; // If the response is not ok, throw the error
                         }
                         return response.json();
                     })
@@ -67,12 +59,12 @@
                         // Show a success message to the user.
                         let messageElement = document.getElementById('message');
                         messageElement.innerText = data.success;
-                        messageElement.classList.remove('d-none');
+                        messageElement.classList.remove('d-none', 'alert-danger');
                         messageElement.classList.add('alert-success');
 
-                        // Hide the message after 2 seconds
+                        // Reload the page to show the updated cart after showing the message
                         setTimeout(() => {
-                            messageElement.classList.add('d-none');
+                            location.reload();
                         }, 2000);
                     })
                     .catch(error => {
@@ -80,7 +72,7 @@
                             // Show error message to the user
                             let messageElement = document.getElementById('message');
                             messageElement.innerText = errorMessage.error;
-                            messageElement.classList.remove('d-none');
+                            messageElement.classList.remove('d-none', 'alert-success');
                             messageElement.classList.add('alert-danger');
 
                             // Hide the message after 2 seconds
@@ -91,6 +83,7 @@
                     });
             });
         });
-
     </script>
+
+
 @endsection
