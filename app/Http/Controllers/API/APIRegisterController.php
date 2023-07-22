@@ -24,6 +24,8 @@ class APIRegisterController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'address' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'regex:/^[0-9]{10}$/'], // exactly 10 digits
             'is_provider' => ['boolean'],
             'provider_type' => ['required_if:is_provider,1', 'exists:provider_types,id'],
             'document' => ['required_if:is_provider,1', 'file', 'mimes:pdf,doc,docx,png,jpg,jpeg'],
@@ -41,6 +43,8 @@ class APIRegisterController extends Controller
             'last_name' => $request->input('last_name'),
             'email' => $request->input('email'),
             'password' => Hash::make($request->input('password')),
+            'address' => $request->input('address'),
+            'phone' => $request->input('phone'),
             'email_verified_at' => null // the email is not yet verified
         ]);
 
@@ -53,7 +57,7 @@ class APIRegisterController extends Controller
 
             if (!$providerType) {
                 return response()->json([
-                    'error' => 'Invalid provider type selected.',
+                    'error' => 'Type de prestataire invalide',
                 ], 422);
             }
 
@@ -62,7 +66,7 @@ class APIRegisterController extends Controller
 
             if (!$documentType) {
                 return response()->json([
-                    'error' => "Unsupported document type: $extension",
+                    'error' => "Type de document incorrect: $extension",
                 ], 422);
             }
 

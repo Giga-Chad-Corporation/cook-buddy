@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('items', function (Blueprint $table) {
+        Schema::create('service_provider', function (Blueprint $table) {
             $table->id();
-            $table->string('model_name');
-            $table->float('selling_price');
-            $table->string('picture_url')->nullable(); // Add this line
-            $table->text('description')->nullable(); // Add this line for description
+            $table->foreignId('service_id')->constrained();
+            $table->foreignId('provider_id')->constrained();
+            $table->decimal('commission', 5, 2); // Column to store commission percentage
             $table->timestamps();
         });
     }
@@ -25,8 +24,9 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    public function down(): void
+    public function down()
     {
-        Schema::dropIfExists('items');
+        Schema::dropIfExists('service_provider');
     }
+
 };
