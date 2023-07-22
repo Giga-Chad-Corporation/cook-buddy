@@ -33,7 +33,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'description',
     ];
 
-
     public function services()
     {
         return $this->belongsToMany(Service::class);
