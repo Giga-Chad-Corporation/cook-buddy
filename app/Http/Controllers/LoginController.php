@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Str;
@@ -14,36 +15,48 @@ class LoginController extends Controller
     }
 
 
-
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
 
-        if (Auth::attempt($credentials)) {
+        $admin = Admin::where('email', $credentials['email'])->exists();
 
-            // Generate and store a new api_token for the authenticated user
+        if ($admin) {
+            return AdminController::login($request);
+        }
+
+        $user = Auth::guard('web')->attempt($credentials);
+        if ($user) {
             $user = Auth::user();
             $user->api_token = Str::random(60);
             $user->save();
-            // Authentication passed...
+
             return redirect('/');
         }
 
-        // Authentication failed...
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ]);
     }
 
-    public function logout()
+
+    public function logout(Request $request)
     {
-        // Remove the api_token for the authenticated user
-        $user = Auth::user();
-        $user->api_token = null;
-        $user->save();
-        Auth::logout();
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->api_token) {
+                $user->api_token = null;
+                $user->save();
+            }
+
+            Auth::logout();
+        }
+
+        session()->flush();
 
         return redirect('/login');
     }
+
+
 
 }

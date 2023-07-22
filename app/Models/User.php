@@ -31,7 +31,6 @@ class User extends Authenticatable
         'description',
     ];
 
-
     public function services()
     {
         return $this->belongsToMany(Service::class);
