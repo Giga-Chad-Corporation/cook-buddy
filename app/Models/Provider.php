@@ -73,6 +73,10 @@ class Provider extends Model
         return $this->hasMany(Quote::class);
     }
 
+    public function services()
+    {
+        return $this->belongsToMany(Service::class)->withPivot('commission');
+    }
 
 
 }
