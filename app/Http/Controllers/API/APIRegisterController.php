@@ -9,6 +9,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
@@ -17,6 +18,7 @@ use App\Models\Provider;
 use App\Models\ProviderType;
 use App\Models\Document;
 use App\Models\DocumentType;
+use Illuminate\Support\Str;
 use Mail;
 
 class APIRegisterController extends Controller
@@ -119,15 +121,24 @@ class APIRegisterController extends Controller
         }
 
         if ($user->hasVerifiedEmail()) {
-            return response()->json('Email already verified.', 422);
+            Auth::login($user);
+            $user->api_token = Str::random(60);
+            $user->save();
+            session()->flash('status', 'Email déjà vérifier.'); // add this
+            return redirect()->route('user.profile'); // Assuming 'profile' is the route to the profile view
         }
 
         if ($user->markEmailAsVerified()) {
             event(new Verified($user));
+            Auth::login($user);
+            $user->api_token = Str::random(60);
+            $user->save();// Log in the user
+            session()->flash('status', 'Email verifier!'); // add this
         }
 
-        return response()->json('Email verified successfully.');
+        return redirect()->route('user.profile');
     }
+
     public function showVerificationNotice()
     {
         // Check if user is logged in
