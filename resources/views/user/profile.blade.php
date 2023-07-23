@@ -7,6 +7,11 @@
                 <div class="card">
                     <div class="card-body">
                         <h1 class="card-title">Profil Utilisateur</h1>
+                        @if (session('status'))
+                            <div class="alert alert-success">
+                                {{ session('status') }}
+                            </div>
+                        @endif
                         <div class="card-text">
                             <div class="row">
                                 <div class="col-md-4">
