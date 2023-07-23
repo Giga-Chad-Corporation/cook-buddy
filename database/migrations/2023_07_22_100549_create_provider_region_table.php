@@ -15,12 +15,16 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('provider_id');
             $table->unsignedBigInteger('region_id');
+            $table->date('available_date');
+            $table->time('start_time');
+            $table->time('end_time');
             $table->timestamps();
 
             $table->foreign('provider_id')->references('id')->on('providers')->onDelete('cascade');
             $table->foreign('region_id')->references('id')->on('regions')->onDelete('cascade');
         });
     }
+
 
 
     /**

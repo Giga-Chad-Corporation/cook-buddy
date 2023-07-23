@@ -6,12 +6,19 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
-                        <h1 class="card-title">Profil Utilisateur</h1>
                         @if (session('status'))
                             <div class="alert alert-success">
                                 {{ session('status') }}
                             </div>
                         @endif
+
+                        @if(auth()->user()->isProvider())
+                            <div>
+                                Modifier vos disponibilités :
+                                <a href="{{ route('provider.availability') }}" class="btn btn-primary">Modifier</a>
+                            </div>
+                        @endif
+
                         <div class="card-text">
                             <div class="row">
                                 <div class="col-md-4">
