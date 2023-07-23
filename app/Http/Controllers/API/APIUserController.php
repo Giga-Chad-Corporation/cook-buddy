@@ -77,10 +77,12 @@ class APIUserController extends Controller
             'user' => $user,
             'role' => $role,
             'providerType' => $providerType,
+            'is_profile_complete' => $provider ? $provider->is_profile_complete : null,
             'plan' => $plan,
             'subscription' => $subscription,
             'profile_photo_path' => $profilePicturePath,
         ]);
+
     }
 
 
