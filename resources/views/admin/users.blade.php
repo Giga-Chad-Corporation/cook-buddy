@@ -14,7 +14,8 @@
                             <div class="alert alert-danger">
                                 {{ session('error') }}
                             </div>
-                        @else
+                        @endif
+                        @if(session('isAdmin'))
                             <div class="d-flex justify-content-between mb-3">
                                 <h4>Liste des utilisateurs :</h4>
                                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
@@ -28,25 +29,28 @@
                                         <th scope="col">Email</th>
                                         <th scope="col">Prénom</th>
                                         <th scope="col">Nom</th>
+                                        <th scope="col">Plan</th>
                                         <th scope="col">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($users as $user)
-                                        <tr>
-                                            <td>{{ $user->email }}</td>
-                                            <td>{{ $user->first_name }}</td>
-                                            <td>{{ $user->last_name }}</td>
-
-                                            <td>
-                                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" id="deleteForm{{ $user->id }}">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="button" class="btn btn-danger" onclick="confirmDelete({{ $user->id }})">Supprimer</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    @endforeach
+                                    @if(isset($users))
+                                        @foreach ($users as $user)
+                                            <tr>
+                                                <td>{{ $user->email }}</td>
+                                                <td>{{ $user->first_name }}</td>
+                                                <td>{{ $user->last_name }}</td>
+                                                <td>{{ $user->subscription->plan->name }}</td>
+                                                <td>
+                                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" id="deleteForm{{ $user->id }}">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="button" class="btn btn-danger" onclick="confirmDelete({{ $user->id }})">Supprimer</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
                                 </tbody>
                             </table>
                         @endif
@@ -90,7 +94,7 @@
                         </div>
                         <div class="form-group">
                             <label for="phone">Numéro de téléphone</label>
-                            <input type="text" class="form-control" id="phone" name="phone" required>
+                            <input type="text" class="form-control" id="phone" name="phone" pattern="^(?:0|\(?\+33\)?\s?|0033\s?)[1-79](?:[\.\-\s]?\d\d){4}$" required>
                         </div>
                         <div class="form-group">
                             <label for="address">Adresse</label>
