@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\EventsController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\FormationController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\ServiceController;
@@ -69,6 +71,15 @@ Route::middleware(['web'])->group(function () {
     Route::put('provider/availability', [ProviderController::class, 'updateAvailability'])->name('provider.availability.update');
     Route::put('/provider/availability/{id}/edit', [ProviderController::class, 'editAvailability'])->name('provider.availability.edit');
     Route::delete('/provider/availability/{id}/delete', [ProviderController::class, 'deleteAvailability'])->name('provider.availability.delete');
+    Route::get('/checkout', [CheckoutController::class, 'index'])->name('cart.checkout');
+    Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::post('/checkout/redirect-to-stripe', [CheckoutController::class, 'redirectToStripe'])->name('checkout.redirectToStripe');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index')->middleware('auth');
+    Route::get('/orders/{order}',[OrderController::class, 'show'] )->name('orders.show');
+
+
+
+
 
 
 

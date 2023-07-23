@@ -17,8 +17,9 @@ class Service extends Model
 
     public function providers()
     {
-        return $this->belongsToMany(Provider::class)->withPivot('commission');
+        return $this->belongsToMany(Provider::class, 'service_provider')->withPivot('commission');
     }
+
 
 
     public function users()

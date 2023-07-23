@@ -16,6 +16,7 @@ return new class extends Migration
             $table->timestamp('planned_delivery_date')->nullable();
             $table->timestamp('real_delivery_date')->nullable();
             $table->string('status')->nullable();
+            $table->string('delivery_address')->nullable();
             $table->timestamps();
         });
     }
