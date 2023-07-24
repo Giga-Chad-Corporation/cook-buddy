@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Building;
 use App\Models\Provider;
 use App\Models\ProviderType;
+use App\Models\Room;
 use App\Models\Service;
 use App\Models\ServiceType;
 use Carbon\Carbon;
@@ -115,6 +116,15 @@ class ServiceController extends Controller
 
     public function store(Request $request)
     {
+        $room = Room::find($request->input('room_id'));
+        $numberPlaces = $request->input('number_places');
+
+        if ($numberPlaces > $room->max_capacity) {
+            return back()->withErrors([
+                'number_places' => 'The number of places cannot exceed the maximum capacity of the room, which is ' . $room->max_capacity . '.'
+            ])->withInput();
+        }
+
         $validator = Validator::make($request->all(), [
             'start_date_time' => 'required',
             'end_date_time' => [
@@ -130,7 +140,6 @@ class ServiceController extends Controller
             'picture' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-
         $validator->sometimes('end_date_time', 'after:start_date_time', function ($input) {
             return isset($input->start_date_time);
         });
@@ -144,15 +153,12 @@ class ServiceController extends Controller
         $service->end_date_time = $request->input('end_date_time');
         $service->title = $request->input('title');
         $service->description = $request->input('description');
-        $service->number_places = $request->input('number_places') + 1;
+        $service->number_places = $request->input('number_places');
         $service->service_type_id = $request->input('service_type_id');
         $service->cost = $request->input('cost');
 
         $providerId = $request->input('provider_id');
         $commission = 5; // Use the actual commission value here
-
-
-
 
         if ($request->hasFile('picture')) {
             $file = $request->file('picture');
@@ -164,13 +170,12 @@ class ServiceController extends Controller
 
         $service->save();
 
-        // Attach the provider to the servicea
+        // Attach the provider to the service
         $service->providers()->attach($providerId, [
             'commission' => $commission,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-
 
         // Check if the service is an atelier or formations professionnelles
         $serviceType = ServiceType::findOrFail($request->input('service_type_id'));
@@ -182,10 +187,20 @@ class ServiceController extends Controller
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
+
+            // New code: fetch and update the room
+            $roomId = $request->input('room');
+            $room = Room::findOrFail($roomId);
+            if ($service->number_places > $room->max_capacity) {
+                return redirect()->back()->withErrors(['The number of places exceeds the room\'s capacity.'])->withInput();
+            }
+            $room->is_reserved = true;
+            $room->save();
         }
 
         return redirect()->route('formation')->with('success', 'Service created successfully.');
     }
+
 
 
     public function addServiceToUser(Request $request)

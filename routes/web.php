@@ -12,6 +12,7 @@ use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProviderController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\StripeController;
@@ -55,6 +56,9 @@ Route::middleware(['web'])->group(function () {
     Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
     Route::post('/service/user/add', [ServiceController::class, 'addServiceToUser'])->name('service.user.add');
     Route::get('/get-available-providers', [ServiceController::class, 'getAvailableProviders'])->name('getAvailableProviders');
+    Route::get('/get-rooms', [RoomController::class,'getRooms'])->name('getRooms');
+    Route::get('/get-room-details', [RoomController::class,'getRoomDetails'])->name('getRoomDetails');
+
 
 
     Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
@@ -79,15 +83,6 @@ Route::middleware(['web'])->group(function () {
     Route::post('/checkout/redirect-to-stripe', [CheckoutController::class, 'redirectToStripe'])->name('checkout.redirectToStripe');
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index')->middleware('auth');
     Route::get('/orders/{order}',[OrderController::class, 'show'] )->name('orders.show');
-
-
-
-
-
-
-
-
-
 
 
     Route::get('/events', [EventsController::class, 'index'])->name('events.index');
