@@ -33,11 +33,10 @@
                                             <td>{{ $user->first_name }}</td>
                                             <td>{{ $user->last_name }}</td>
                                             <td>
-                                                <form action="{{ echo '/admin/users?user_id=' . $user->id }}" method="POST">
+                                                <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" id="deleteForm{{ $user->id }}">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <input type="hidden" name="user_id" value="{{ $user->id }}">
-                                                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                                                    <button type="button" class="btn btn-danger" onclick="confirmDelete({{ $user->id }})">Supprimer</button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -49,4 +48,14 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function confirmDelete(userId) {
+            if (confirm('Voulez-vous vraiment supprimer cet utilisateur ?')) {
+                // Si l'utilisateur confirme, soumettez le formulaire de suppression
+                document.getElementById('deleteForm' + userId).submit();
+            }
+        }
+    </script>
+
 @endsection
