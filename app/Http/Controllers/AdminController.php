@@ -6,14 +6,14 @@ use App\Models\Admin;
 use App\Models\Item;
 use App\Models\ItemType;
 use App\Models\Tag;
+use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
-use Ramsey\Uuid\Type\Integer;
 
 class AdminController extends Controller
 {
@@ -23,11 +23,9 @@ class AdminController extends Controller
 
         if (Auth::guard("admin")->check()) {
             return view('admin.index');
-        }
-        elseif (Auth::guard("web")->check()) {
+        } elseif (Auth::guard("web")->check()) {
             return redirect('/');
-        }
-        else {
+        } else {
             return redirect('/login');
         }
     }
@@ -55,13 +53,16 @@ class AdminController extends Controller
         ]);
     }
 
-    public function users()
+    public function users(string $error = null)
     {
         session()->forget('error');
+        if ($error) {
+            session()->put('error', $error);
+        }
 
         $admin = Auth::guard('admin')->user();
         if ($admin->is_super_admin || $admin->manage_users) {
-            $users = User::all();
+            $users = User::with('subscription.plan:id,name')->get();
             return view('admin.users', compact('users'));
         } else {
             session()->put('error', 'Vous n\'avez pas les droits pour accéder à cette page.');
@@ -71,9 +72,28 @@ class AdminController extends Controller
 
     public function createUser(Request $request)
     {
-
         $admin = Auth::guard('admin')->user();
         if ($admin->is_super_admin || $admin->manage_users) {
+            $validator = Validator::make($request->all(), [
+                'username' => ['required', 'string', 'max:255', 'unique:users'],
+                'first_name' => ['required', 'string', 'max:255'],
+                'last_name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+                'password' => ['required', 'string', 'min:8'],
+                'phone' => ['required', 'string',],
+            ]);
+
+            if ($validator->fails()) {
+                $errors = $validator->errors();
+                $errorMessages = "";
+
+                foreach ($errors->all() as $message) {
+                    $errorMessages .= "- " . $message . "\n";
+                }
+
+                return $this->users($errorMessages);
+            }
+
             $user = new User();
             $user->email = $request->email;
             $user->password = Hash::make($request->password);
@@ -86,8 +106,13 @@ class AdminController extends Controller
 
             $user->save();
 
-            $user->is_admin = $this->convertToBoolean($request->is_admin);
-            if ($user->is_admin) {
+            $subscription = new Subscription();
+            $subscription->user_id = $user->id;
+            $subscription->plan_id = 1;
+
+            $subscription->save();
+
+            if ($request->is_admin) {
                 $admin = new Admin();
                 $admin->user_id = $user->id;
                 $admin->email = $request->admin_email;

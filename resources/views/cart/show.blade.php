@@ -2,7 +2,14 @@
 
 @section('content')
     <div class="container">
-        <h1 class="mt-5 mb-5">Mon Panier</h1>
+        <div>
+            <h1 class="mt-5 ">Mon Panier</h1>
+            <div class="d-flex">
+                <a href="{{ route('cart.checkout') }}" class="btn btn-primary mb-5 mr-3">Payer</a>
+                <a href="{{ route('orders.index') }}" class="btn btn-secondary mb-5">Mes commandes</a>
+            </div>
+        </div>
+
 
         <!-- Message container -->
         <div id="message" class="alert d-none"></div>
@@ -19,9 +26,12 @@
                             <p class="card-text">Quantité : {{ $item->quantity }}</p>
                             <div class="mt-auto">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <button type="button" class="btn btn-sm btn-outline-danger delete-item" data-id="{{ $item->id }}">Supprimer</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger delete-item"
+                                            data-id="{{ $item->id }}">Supprimer
+                                    </button>
 
-                                    <p class="text-right">{{ number_format($item->selling_price * $item->quantity, 2) }} €</p>
+                                    <p class="text-right">{{ number_format($item->selling_price * $item->quantity, 2) }}
+                                        €</p>
                                 </div>
                             </div>
                         </div>
@@ -33,8 +43,8 @@
     </div>
 
     <script>
-        document.querySelectorAll('.delete-item').forEach(function(button) {
-            button.addEventListener('click', function(event) {
+        document.querySelectorAll('.delete-item').forEach(function (button) {
+            button.addEventListener('click', function (event) {
                 event.preventDefault();
 
                 let itemId = this.dataset.id;
@@ -84,6 +94,5 @@
             });
         });
     </script>
-
 
 @endsection

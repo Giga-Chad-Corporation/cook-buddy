@@ -75,8 +75,15 @@ class Provider extends Model
 
     public function services()
     {
-        return $this->belongsToMany(Service::class)->withPivot('commission');
+        return $this->belongsToMany(Service::class, 'service_provider')->withPivot('commission');
     }
+
+
+    public function regions()
+    {
+        return $this->belongsToMany(Region::class)->withPivot('available_date', 'start_time', 'end_time')->withTimestamps();
+    }
+
 
 
 }

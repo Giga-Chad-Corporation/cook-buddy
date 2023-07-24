@@ -4,6 +4,7 @@ use App\Http\Controllers\API\APILoginController;
 use App\Http\Controllers\API\APIRegisterController;
 use App\Http\Controllers\API\APIUserController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProviderController;
 use App\Http\Controllers\ProviderTypeController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\UserController;
@@ -34,6 +35,8 @@ Route::middleware('api')->group(function () {
         Route::get('/user/profile', [APIUserController::class, 'showProfile'])->name('api.user.profile');
         Route::patch('user/profile/update', [APIUserController::class, 'updateProfile'])->name('api.user.profile.update');
         Route::post('user/profile/picture', [APIUserController::class, 'updateProfilePicture'])->name('api.user.profile.picture');
+
+
 
     });
 
