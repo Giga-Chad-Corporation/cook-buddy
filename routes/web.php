@@ -58,6 +58,8 @@ Route::middleware(['web'])->group(function () {
     Route::get('/get-available-providers', [ServiceController::class, 'getAvailableProviders'])->name('getAvailableProviders');
     Route::get('/get-rooms', [RoomController::class,'getRooms'])->name('getRooms');
     Route::get('/get-room-details', [RoomController::class,'getRoomDetails'])->name('getRoomDetails');
+    Route::get('/get-available-rooms', [RoomController::class,'getAvailableRooms'])->name('getAvailableRooms');
+
 
 
 

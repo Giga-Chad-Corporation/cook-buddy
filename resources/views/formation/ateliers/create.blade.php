@@ -98,26 +98,25 @@
             var roomSelect = document.getElementById('room');
             var selectedBuildingId = buildingSelect.value;
 
-            // Clear the rooms select
-            roomSelect.innerHTML = '<option value="">Sélectionner une salle</option>';
+            // Fetch the available rooms
+            fetch(`/get-available-rooms?building_id=${selectedBuildingId}`)
+                .then(response => response.json())
+                .then(rooms => {
+                    // Clear the rooms select
+                    roomSelect.innerHTML = '<option value="">Sélectionner une salle</option>';
 
-            // Find the selected building option
-            var selectedBuildingOption = buildingSelect.options[buildingSelect.selectedIndex];
-
-            // Retrieve the rooms data from the data-rooms attribute
-            var roomsData = selectedBuildingOption.getAttribute('data-rooms');
-
-            // If rooms data is available, populate the rooms select
-            if (roomsData) {
-                var rooms = JSON.parse(roomsData);
-                rooms.forEach(function(room) {
-                    var option = document.createElement('option');
-                    option.value = room.id;
-                    option.text = room.name;
-                    roomSelect.appendChild(option);
+                    // If rooms data is available, populate the rooms select
+                    if (rooms) {
+                        rooms.forEach(function(room) {
+                            var option = document.createElement('option');
+                            option.value = room.id;
+                            option.text = room.name;
+                            roomSelect.appendChild(option);
+                        });
+                    }
                 });
-            }
         }
+
 
         // Event listener for building selection change
         document.getElementById('building').addEventListener('change', populateRooms);

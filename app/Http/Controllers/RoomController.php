@@ -43,4 +43,19 @@ class RoomController extends Controller
 
         return response()->json($room);
     }
+
+    public function getAvailableRooms(Request $request)
+    {
+        // Get the building id from the request
+        $building_id = $request->input('building_id');
+
+        // Fetch the rooms from the database where is_reserved is false and belong to the selected building
+        $rooms = Room::where('building_id', $building_id)
+            ->where('is_reserved', false)
+            ->get();
+
+        // Return the rooms as JSON
+        return response()->json($rooms);
+    }
+
 }
