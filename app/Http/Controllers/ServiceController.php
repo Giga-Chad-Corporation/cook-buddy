@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Building;
 use App\Models\Provider;
 use App\Models\ProviderType;
+use App\Models\Room;
 use App\Models\Service;
 use App\Models\ServiceType;
 use Carbon\Carbon;
@@ -40,6 +41,9 @@ class ServiceController extends Controller
             $query->where('available_date', $startDate->format('Y-m-d'))
                 ->whereTime('start_time', '<=', $startDate->format('H:i:s'))
                 ->whereTime('end_time', '>=', $endDate->format('H:i:s'));
+        })->whereDoesntHave('services', function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('start_date_time', [$startDate->format('Y-m-d H:i:s'), $endDate->format('Y-m-d H:i:s')])
+                ->orWhereBetween('end_date_time', [$startDate->format('Y-m-d H:i:s'), $endDate->format('Y-m-d H:i:s')]);
         })->whereHas('providerType', function ($query) use ($providerTypes) {
             $query->whereIn('type_name', $providerTypes);
         })->get();
@@ -51,6 +55,7 @@ class ServiceController extends Controller
 
         return response()->json($providers);
     }
+
 
 
     public function createCoursADomicile()
@@ -85,9 +90,10 @@ class ServiceController extends Controller
     {
         $admin = Auth::guard('admin')->user();
         $serviceType = ServiceType::where('type_name', 'Cours en ligne')->firstOrFail();
+        $buildings = Building::all();;
 
         if ($admin && $admin->is_super_admin) {
-            return view('formation.cours-en-ligne.create', compact('serviceType'));
+            return view('formation.cours-en-ligne.create', compact('serviceType', 'buildings'));
         } else {
             session()->put('error', 'Vous n\'avez pas les droits pour accéder à cette page.');
             return view('admin.users');
@@ -111,6 +117,15 @@ class ServiceController extends Controller
 
     public function store(Request $request)
     {
+        $room = Room::find($request->input('room_id'));
+        $numberPlaces = $request->input('number_places');
+
+        if ($numberPlaces > $room->max_capacity) {
+            return back()->withErrors([
+                'number_places' => 'The number of places cannot exceed the maximum capacity of the room, which is ' . $room->max_capacity . '.'
+            ])->withInput();
+        }
+
         $validator = Validator::make($request->all(), [
             'start_date_time' => 'required',
             'end_date_time' => [
@@ -126,7 +141,6 @@ class ServiceController extends Controller
             'picture' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
-
         $validator->sometimes('end_date_time', 'after:start_date_time', function ($input) {
             return isset($input->start_date_time);
         });
@@ -140,15 +154,12 @@ class ServiceController extends Controller
         $service->end_date_time = $request->input('end_date_time');
         $service->title = $request->input('title');
         $service->description = $request->input('description');
-        $service->number_places = $request->input('number_places') + 1;
+        $service->number_places = $request->input('number_places');
         $service->service_type_id = $request->input('service_type_id');
         $service->cost = $request->input('cost');
 
         $providerId = $request->input('provider_id');
         $commission = 5; // Use the actual commission value here
-
-
-
 
         if ($request->hasFile('picture')) {
             $file = $request->file('picture');
@@ -167,7 +178,6 @@ class ServiceController extends Controller
             'updated_at' => now(),
         ]);
 
-
         // Check if the service is an atelier or formations professionnelles
         $serviceType = ServiceType::findOrFail($request->input('service_type_id'));
         if ($serviceType->type_name === 'Ateliers' || $serviceType->type_name === 'Formations professionnelles') {
@@ -178,10 +188,20 @@ class ServiceController extends Controller
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ]);
+
+            // New code: fetch and update the room
+            $roomId = $request->input('room');
+            $room = Room::findOrFail($roomId);
+            if ($service->number_places > $room->max_capacity) {
+                return redirect()->back()->withErrors(['The number of places exceeds the room\'s capacity.'])->withInput();
+            }
+            $room->is_reserved = true;
+            $room->save();
         }
 
         return redirect()->route('formation')->with('success', 'Service created successfully.');
     }
+
 
 
     public function addServiceToUser(Request $request)
