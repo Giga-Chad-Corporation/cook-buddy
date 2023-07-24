@@ -54,53 +54,77 @@ class ServiceController extends Controller
     public function createCoursADomicile()
     {
         $admin = Auth::guard('admin')->user();
+        $user = Auth::guard('web')->user();
+        $serviceType = ServiceType::where('type_name', 'Cours à domicile')->firstOrFail();
 
-        if ($admin->is_super_admin) {
+        if ($admin && $admin->is_super_admin) {
             $serviceType = ServiceType::where('type_name', 'Cours à domicile')->firstOrFail();
             return view('formation.cours-a-domicile.create', compact('serviceType'));
-        } else {
-            session()->put('error', 'Vous n\'avez pas les droits pour accéder à cette page.');
-            return view('admin.users');
+        } elseif($user && $user->is_provider) {
+            return view('formation.cours-a-domicile.provider');
+        } elseif ($user && !$user->isProvider()) {
+            $services = Service::with('providers', 'providers.user')->where('service_type_id', $serviceType->id)->get();
+
+            return view('formation.cours-a-domicile.index', compact('user', 'services'));
+        }
+        else {
+            return redirect()->route('login');
         }
     }
 
     public function ateliers()
     {
+        $user = Auth::user();
         $admin = Auth::guard('admin')->user();
         $serviceType = ServiceType::where('type_name', 'Ateliers')->firstOrFail();
         $buildings = Building::all();
 
         if ($admin && $admin->is_super_admin) {
             return view('formation.ateliers.create', compact('serviceType', 'buildings'));
+        }elseif($user && $user->is_provider) {
+            return view('formation.cours-a-domicile.provider');
+        } elseif ($user && !$user->isProvider()) {
+            $services = Service::with('providers', 'providers.user')->where('service_type_id', $serviceType->id)->get();
+            return view('formation.ateliers.index', compact('user', 'services'));
         } else {
-            session()->put('error', 'Vous n\'avez pas les droits pour accéder à cette page.');
-            return view('admin.users');
+            return redirect()->route('login');
         }
     }
 
     public function createCoursEnLigne()
     {
+        $user = Auth::user();
         $admin = Auth::guard('admin')->user();
         $serviceType = ServiceType::where('type_name', 'Cours en ligne')->firstOrFail();
         $buildings = Building::all();;
 
         if ($admin && $admin->is_super_admin) {
             return view('formation.cours-en-ligne.create', compact('serviceType', 'buildings'));
+        }elseif($user && $user->is_provider) {
+            return view('formation.cours-a-domicile.provider');
+        } elseif ($user && !$user->isProvider()) {
+            $services = Service::with('providers', 'providers.user')->where('service_type_id', $serviceType->id)->get();
+            return view('formation.cours-en-ligne.index', compact('user', 'services'));
         } else {
-            session()->put('error', 'Vous n\'avez pas les droits pour accéder à cette page.');
-            return view('admin.users');
+            return redirect()->route('login');
         }
     }
 
     public function formationsProfessionnelles()
     {
+        $user = Auth::user();
         $admin = Auth::guard('admin')->user();
         $serviceType = ServiceType::where('type_name', 'Formations Professionnelles')->firstOrFail();
         $buildings = Building::all();
 
         if ($admin && $admin->is_super_admin) {
             return view('formation.formations-professionnelles.create', compact('serviceType', 'buildings'));
-        } else {
+        }elseif($user && $user->is_provider) {
+            return view('formation.cours-a-domicile.provider');
+        } elseif ($user && !$user->isProvider()) {
+            $services = Service::with('providers', 'providers.user')->where('service_type_id', $serviceType->id)->get();
+            return view('formation.formations-professionnelles.index', compact('user', 'services'));
+        }else {
             session()->put('error', 'Vous n\'avez pas les droits pour accéder à cette page.');
             return view('admin.users');
         }
@@ -255,9 +279,5 @@ class ServiceController extends Controller
 
         return response()->json(['message' => 'Unauthorized.'], 401);
     }
-
-
-
-
 
 }
