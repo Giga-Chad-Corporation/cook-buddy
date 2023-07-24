@@ -47,6 +47,20 @@ Route::middleware(['web'])->group(function () {
     Route::post('/admin/users', [AdminController::class, 'createUser'])->name('admin.users.store');
     Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.destroy');
 
+    Route::get('/admin/types', [AdminController::class, 'types'])->name('admin.types');
+    Route::post('/admin/types', [AdminController::class, 'createType'])->name('admin.types.store');
+    Route::delete('/admin/types/{id}', [AdminController::class, 'deleteType'])->name('admin.types.destroy');
+
+
+    Route::get('/admin/tags', [AdminController::class, 'tags'])->name('admin.tags');
+    Route::post('/admin/tags', [AdminController::class, 'createTag'])->name('admin.tags.store');
+    Route::delete('/admin/tags/{id}', [AdminController::class, 'deleteTag'])->name('admin.tags.destroy');
+
+    Route::get('/admin/items', [AdminController::class, 'articles'])->name('admin.items');
+    Route::post('/admin/items', [AdminController::class, 'createArticles'])->name('admin.items.store');
+    Route::delete('/admin/items/{id}', [AdminController::class, 'deleteArticles'])->name('admin.items.destroy');
+    Route::put('/items/{item}', [AdminController::class, 'updateArticles'])->name('admin.items.update');
+
     Route::get('/formation', [FormationController::class, 'index'])->name('formation');
     Route::get('/formation/cours-a-domicile', [ServiceController::class, 'createCoursADomicile'])->name('formation.cours-a-domicile');
     Route::get('/formation/cours-en-ligne', [ServiceController::class, 'createCoursEnLigne'])->name('formation.cours-en-ligne');
