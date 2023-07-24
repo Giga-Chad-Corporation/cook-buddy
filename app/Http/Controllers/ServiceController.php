@@ -21,23 +21,17 @@ use Google\Service\YouTube\LiveBroadcastStatus as Google_Service_YouTube_LiveBro
 
 class ServiceController extends Controller
 {
+
     public function createCoursADomicile()
     {
-        $user = Auth::user();
-        $serviceType = ServiceType::where('type_name', 'Cours à domicile')->firstOrFail();
+        $admin = Auth::guard('admin')->user();
 
-        if ($user && $user->isProvider() && $user->provider->providerType->type_name === 'Chef cuisinier') {
-            // Check if the provider has an address
-            if ($user->address) {
-                return view('formation.cours-a-domicile.create', compact('serviceType'));
-            } else {
-                return redirect()->route('user.profile')->with('error', 'Met à jour ton adresse pour pouvoir créer un cours à domicile.');
-            }
-        } elseif ($user && !$user->isProvider()) {
-            $services = Service::with('users.provider')->where('service_type_id', $serviceType->id)->get();
-            return view('formation.cours-a-domicile.index', compact('user', 'services'));
+        if ($admin->is_super_admin) {
+            $serviceType = ServiceType::where('type_name', 'Cours à domicile')->firstOrFail();
+            return view('formation.cours-a-domicile.create', compact('serviceType'));
         } else {
-            return redirect()->route('login'); // Redirect to the login page, adjust the route as needed
+            session()->put('error', 'Vous n\'avez pas les droits pour accéder à cette page.');
+            return view('admin.users');
         }
     }
 
@@ -47,17 +41,14 @@ class ServiceController extends Controller
         $serviceType = ServiceType::where('type_name', 'Ateliers')->firstOrFail();
         $buildings = Building::all();
 
-        if ($user && $user->isProvider() && $user->provider->providerType->type_name === 'Chef cuisinier') {
-            // Check if the provider has an address
+        if ($user && $user->isAdmin()) {
+            // Check if the admin has an address
             if ($user->address) {
                 return view('formation.ateliers.create', compact('serviceType', 'buildings'));
             } else {
                 $errorMessage = 'Met à jour ton adresse pour pouvoir créer un atelier.';
                 return view('formation.ateliers.index', compact('user', 'services', 'errorMessage'));
             }
-        } elseif ($user && !$user->isProvider()) {
-            $services = Service::with('users.provider')->where('service_type_id', $serviceType->id)->get();
-            return view('formation.ateliers.index', compact('user', 'services'));
         } else {
             return redirect()->route('login');
         }
@@ -68,16 +59,13 @@ class ServiceController extends Controller
         $user = Auth::user();
         $serviceType = ServiceType::where('type_name', 'Cours en ligne')->firstOrFail();
 
-        if ($user && $user->isProvider() && $user->provider->providerType->type_name === 'Chef cuisinier') {
-            // Check if the provider has an address
+        if ($user && $user->isAdmin()) {
+            // Check if the admin has an address
             if ($user->address) {
                 return view('formation.cours-en-ligne.create', compact('serviceType'));
             } else {
                 return redirect()->route('user.profile')->with('error', 'Mets à jour ton adresse pour pouvoir créer un cours en ligne.');
             }
-        } elseif ($user && !$user->isProvider()) {
-            $services = Service::with('users.provider')->where('service_type_id', $serviceType->id)->get();
-            return view('formation.cours-en-ligne.index', compact('user', 'services'));
         } else {
             return redirect()->route('login'); // Redirect to the login page, adjust the route as needed
         }
@@ -89,23 +77,17 @@ class ServiceController extends Controller
         $serviceType = ServiceType::where('type_name', 'Formations Professionnelles')->firstOrFail();
         $buildings = Building::all();
 
-        if ($user && $user->isProvider() && $user->provider->providerType->type_name === 'Chef de formation') {
-            // Check if the provider has an address
+        if ($user && $user->isAdmin()) {
+            // Check if the admin has an address
             if ($user->address) {
                 return view('formation.formations-professionnelles.create', compact('serviceType', 'buildings'));
             } else {
                 return redirect()->route('user.profile')->with('error', 'Mets à jour ton adresse pour pouvoir créer un cours en ligne.');
             }
-        } elseif ($user && !$user->isProvider()) {
-            $services = Service::with('users.provider')->where('service_type_id', $serviceType->id)->get();
-            return view('formation.formations-professionnelles.index', compact('user', 'services'));
         } else {
             return redirect()->route('login');
         }
     }
-
-
-
 
 
     public function store(Request $request)
