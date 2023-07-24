@@ -54,6 +54,8 @@ Route::middleware(['web'])->group(function () {
     Route::get('/formation/formations-professionnelles', [ServiceController::class, 'formationsProfessionnelles'])->name('formation.formations-professionnelles');
     Route::post('/services', [ServiceController::class, 'store'])->name('services.store');
     Route::post('/service/user/add', [ServiceController::class, 'addServiceToUser'])->name('service.user.add');
+    Route::get('/get-available-providers', [ServiceController::class, 'getAvailableProviders'])->name('getAvailableProviders');
+
 
     Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
     Route::post('/create-checkout-session/{planId}/{type}', [StripeController::class, 'createCheckoutSession'])->name('create-checkout-session');

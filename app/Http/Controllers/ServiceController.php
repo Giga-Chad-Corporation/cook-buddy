@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Building;
+use App\Models\Provider;
 use App\Models\ProviderType;
 use App\Models\Service;
 use App\Models\ServiceType;
@@ -22,6 +23,37 @@ use Google\Service\YouTube\LiveBroadcastStatus as Google_Service_YouTube_LiveBro
 class ServiceController extends Controller
 {
 
+    public function getAvailableProviders(Request $request) {
+        // Define the provider types
+        $providerTypes = ['Chef cuisinier'];
+
+        $startDate = Carbon::createFromFormat('Y-m-d\TH:i', $request->start_date_time);
+        $endDate = Carbon::createFromFormat('Y-m-d\TH:i', $request->end_date_time);
+
+        // Fetch all providers who have availability during the service time
+        $providers = Provider::with(['regions' => function ($query) use ($startDate, $endDate) {
+            $query->where('available_date', $startDate->format('Y-m-d'))
+                ->whereTime('start_time', '<=', $startDate->format('H:i:s'))
+                ->whereTime('end_time', '>=', $endDate->format('H:i:s'));
+        }, 'user'])->whereHas('regions', function($query) use ($startDate, $endDate) {
+            $query->where('available_date', $startDate->format('Y-m-d'))
+                ->whereTime('start_time', '<=', $startDate->format('H:i:s'))
+                ->whereTime('end_time', '>=', $endDate->format('H:i:s'));
+        })->whereHas('providerType', function($query) use ($providerTypes) {
+            $query->whereIn('type_name', $providerTypes);
+        })->get();
+
+        // Filter out providers with no regions available
+        $providers = $providers->reject(function ($provider) {
+            return $provider->regions->isEmpty();
+        });
+
+        return response()->json($providers);
+    }
+
+
+
+
     public function createCoursADomicile()
     {
         $admin = Auth::guard('admin')->user();
@@ -35,59 +67,52 @@ class ServiceController extends Controller
         }
     }
 
+
+
+
+
     public function ateliers()
     {
-        $user = Auth::user();
+        $admin = Auth::guard('admin')->user();
         $serviceType = ServiceType::where('type_name', 'Ateliers')->firstOrFail();
         $buildings = Building::all();
 
-        if ($user && $user->isAdmin()) {
-            // Check if the admin has an address
-            if ($user->address) {
-                return view('formation.ateliers.create', compact('serviceType', 'buildings'));
-            } else {
-                $errorMessage = 'Met à jour ton adresse pour pouvoir créer un atelier.';
-                return view('formation.ateliers.index', compact('user', 'services', 'errorMessage'));
-            }
+        if ($admin && $admin->is_super_admin) {
+            return view('formation.ateliers.create', compact('serviceType', 'buildings'));
         } else {
-            return redirect()->route('login');
+            session()->put('error', 'Vous n\'avez pas les droits pour accéder à cette page.');
+            return view('admin.users');
         }
     }
 
     public function createCoursEnLigne()
     {
-        $user = Auth::user();
+        $admin = Auth::guard('admin')->user();
         $serviceType = ServiceType::where('type_name', 'Cours en ligne')->firstOrFail();
 
-        if ($user && $user->isAdmin()) {
-            // Check if the admin has an address
-            if ($user->address) {
-                return view('formation.cours-en-ligne.create', compact('serviceType'));
-            } else {
-                return redirect()->route('user.profile')->with('error', 'Mets à jour ton adresse pour pouvoir créer un cours en ligne.');
-            }
+        if ($admin && $admin->is_super_admin) {
+            return view('formation.cours-en-ligne.create', compact('serviceType'));
         } else {
-            return redirect()->route('login'); // Redirect to the login page, adjust the route as needed
+            session()->put('error', 'Vous n\'avez pas les droits pour accéder à cette page.');
+            return view('admin.users');
         }
     }
 
     public function formationsProfessionnelles()
     {
-        $user = Auth::user();
+        $admin = Auth::guard('admin')->user();
         $serviceType = ServiceType::where('type_name', 'Formations Professionnelles')->firstOrFail();
         $buildings = Building::all();
 
-        if ($user && $user->isAdmin()) {
-            // Check if the admin has an address
-            if ($user->address) {
-                return view('formation.formations-professionnelles.create', compact('serviceType', 'buildings'));
-            } else {
-                return redirect()->route('user.profile')->with('error', 'Mets à jour ton adresse pour pouvoir créer un cours en ligne.');
-            }
+        if ($admin && $admin->is_super_admin) {
+            return view('formation.formations-professionnelles.create', compact('serviceType', 'buildings'));
         } else {
-            return redirect()->route('login');
+            session()->put('error', 'Vous n\'avez pas les droits pour accéder à cette page.');
+            return view('admin.users');
         }
     }
+
+
 
 
     public function store(Request $request)
