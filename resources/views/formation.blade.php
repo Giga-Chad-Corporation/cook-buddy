@@ -3,6 +3,11 @@
 @section('content')
     <div class="container-fluid mt-5">
         <div class="max-height">
+            @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
             <div class="row justify-content-center">
                 <div class="col-md-3 formation-block">
                     <div class="card ">

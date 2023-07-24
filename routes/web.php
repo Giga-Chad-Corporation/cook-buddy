@@ -7,6 +7,7 @@ use App\Http\Controllers\FoodController;
 use App\Http\Controllers\FormationController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\LivestreamController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\OrderController;
@@ -79,6 +80,9 @@ Route::middleware(['web'])->group(function () {
 
 
 
+
+    Route::get('/livestream/authorize', [LivestreamController::class, 'authorizeYouTube'])->name('livestream.authorize');
+    Route::get('/livestream/create', [LivestreamController::class, 'createYouTubeLivestream'])->name('livestream.create');
 
     Route::get('/plans', [PlanController::class, 'index'])->name('plans.index');
     Route::post('/create-checkout-session/{planId}/{type}', [StripeController::class, 'createCheckoutSession'])->name('create-checkout-session');

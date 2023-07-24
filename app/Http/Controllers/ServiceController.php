@@ -9,16 +9,9 @@ use App\Models\Room;
 use App\Models\Service;
 use App\Models\ServiceType;
 use Carbon\Carbon;
-use Google_Service_YouTube_LiveBroadcastContentDetails;
-use Google_Service_YouTube_LiveStream;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Google\Client as Google_Client;
-use Google\Service\YouTube as Google_Service_YouTube;
-use Google\Service\YouTube\LiveBroadcast as Google_Service_YouTube_LiveBroadcast;
-use Google\Service\YouTube\LiveBroadcastSnippet as Google_Service_YouTube_LiveBroadcastSnippet;
-use Google\Service\YouTube\LiveBroadcastStatus as Google_Service_YouTube_LiveBroadcastStatus;
 
 
 class ServiceController extends Controller
@@ -78,8 +71,6 @@ class ServiceController extends Controller
             return redirect()->route('login');
         }
     }
-
-
 
     public function ateliers()
     {
@@ -142,15 +133,6 @@ class ServiceController extends Controller
 
     public function store(Request $request)
     {
-        $room = Room::find($request->input('room_id'));
-        $numberPlaces = $request->input('number_places');
-
-        if ($numberPlaces > $room->max_capacity) {
-            return back()->withErrors([
-                'number_places' => 'The number of places cannot exceed the maximum capacity of the room, which is ' . $room->max_capacity . '.'
-            ])->withInput();
-        }
-
         $validator = Validator::make($request->all(), [
             'start_date_time' => 'required',
             'end_date_time' => [
@@ -223,11 +205,30 @@ class ServiceController extends Controller
             $room->is_reserved = true;
             $room->save();
         }
+        if ($serviceType->type_name === 'Cours en ligne') {
+            session()->put('liveStreamData', [
+                'title' => $service->title,
+                'description' => $service->description,
+                'start_date_time' => $service->start_date_time,
+                'end_date_time' => $service->end_date_time,
+                'service_id' => $service->id,
+            ]);
+
+            return redirect()->route('livestream.authorize');
+        }
+
+        $room = Room::find($request->input('room_id'));
+        $numberPlaces = $request->input('number_places');
+
+        if ($numberPlaces > $room->max_capacity && $serviceType->type_name != 'Cours en ligne') {
+            return back()->withErrors([
+                'number_places' => 'The number of places cannot exceed the maximum capacity of the room, which is ' . $room->max_capacity . '.'
+            ])->withInput();
+        }
+
 
         return redirect()->route('formation')->with('success', 'Service created successfully.');
     }
-
-
 
     public function addServiceToUser(Request $request)
     {
@@ -267,7 +268,6 @@ class ServiceController extends Controller
                 'updated_at' => now(),
             ]);
 
-            // Update the remaining places for the service
             $remainingPlaces--;
 
             $service->update([

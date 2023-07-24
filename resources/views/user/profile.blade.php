@@ -147,7 +147,6 @@
             var saveButton = document.getElementById('saveButton');
             var profilePictureInput = document.getElementById('profilePictureInput');
 
-            // Fetch user profile data
             fetch("{{ route('api.user.profile') }}", {
                 headers: {
                     'Authorization': 'Bearer {{ auth()->user()->api_token }}',
@@ -166,10 +165,8 @@
                         var startDate = new Date(subscription.start_date);
                         var endDate = new Date(subscription.end_date);
 
-                        // Update subscription information with formatted dates
                         document.getElementById('planName').innerText = 'Plan : ' + plan.name;
                         document.getElementById('startDate').innerText = 'Date de début : ' + startDate.toLocaleDateString('fr-FR');
-                        // Display end date only if the plan is not "Free"
                         if (plan.name !== "Free") {
                             document.getElementById('endDate').innerText = 'End Date : ' + (subscription.end_date ? endDate.toLocaleDateString('fr-FR') : 'N/A');
                         } else {
@@ -180,9 +177,9 @@
                         document.getElementById('userName').innerText = 'Nom : ' + user.first_name + ' ' + user.last_name;
                         document.getElementById('userEmail').innerText = 'Email : ' + user.email;
                         document.getElementById('userUsername').innerText = 'Username : ' + user.username;
-                        document.getElementById('userAddress').innerText = 'Adresse : ' + user.address;
+                        document.getElementById('userAddress').innerText = 'Adresse : ' + user.address ? user.address : 'N/A';
                         document.getElementById('userPhone').innerText = 'Téléphone : ' + user.phone;
-                        document.getElementById('userDescription').innerText = 'Description : ' + user.description;
+                        document.getElementById('userDescription').innerText = 'Description : ' + user.description ? user.description : 'N/A';
                         document.getElementById('userRole').innerText = 'Rôle : ' + role;
 
                         if (role === 'Prestataire') {
@@ -201,7 +198,6 @@
                         document.querySelector('input[name="phone"]').value = user.phone;
                         document.querySelector('input[name="description"]').value = user.description;
 
-                        // Set the profile picture
                         document.getElementById('profilePictureContainer').querySelector('img').src = user.profile_photo_path ? '/storage/' + user.profile_photo_path : '/images/user/default-profile-picture.png';
 
                     } else {
@@ -210,12 +206,10 @@
                 })
                 .catch(error => console.log(error));
 
-            // Update user profile picture
             document.getElementById('saveProfilePicture').addEventListener('click', function() {
-                profilePictureInput.click(); // Trigger the file input click event
+                profilePictureInput.click();
             });
 
-            // Handle file selection
             profilePictureInput.addEventListener('change', function() {
                 var formData = new FormData();
                 var file = profilePictureInput.files[0];
@@ -244,7 +238,6 @@
                     .catch(error => console.log(error));
             });
 
-            // Handle the "Modifier" button click
             editButton.addEventListener('click', function() {
                 editButton.style.display = 'none';
                 saveButton.style.display = 'block';
@@ -257,7 +250,6 @@
                 profileForm.style.display = 'block';
             });
 
-            // Handle the form submission
             profileForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 
@@ -277,24 +269,21 @@
                         console.log('Success:', data);
 
                         if (data.errors) {
-                            // Display console errors
                             console.log('Profile update failed:', data.errors);
-                            // Display form validation errors
                             const errorMessages = Object.values(data.errors).flat();
                             const errorContainer = document.getElementById('error-container');
                             errorContainer.innerHTML = ''; // Clear previous errors
                             errorMessages.forEach(message => {
                                 const errorElement = document.createElement('div');
-                                errorElement.className = 'alert alert-danger'; // add bootstrap class
+                                errorElement.className = 'alert alert-danger';
                                 errorElement.textContent = message;
                                 errorContainer.appendChild(errorElement);
                             });
                         } else if (data.message) {
-                            // Update successful, display success message
                             const successContainer = document.getElementById('success-container');
-                            successContainer.innerHTML = ''; // Clear previous success message
+                            successContainer.innerHTML = '';
                             const successElement = document.createElement('div');
-                            successElement.className = 'alert alert-success'; // add bootstrap class
+                            successElement.className = 'alert alert-success';
                             successElement.textContent = data.message;
                             successContainer.appendChild(successElement);
 
@@ -303,7 +292,6 @@
                                 console.log('Updated user:', user);
                                 var user = data.user;
 
-                                // Update user info on the page
                                 document.getElementById('userName').innerText = 'Nom : ' + user.first_name + ' ' + user.last_name;
                                 document.getElementById('userEmail').innerText = 'Email : ' + user.email;
                                 document.getElementById('userUsername').innerText = 'Username : ' + user.username;
@@ -311,7 +299,6 @@
                                 document.getElementById('userPhone').innerText = 'Téléphone : ' + user.phone;
                                 document.getElementById('userDescription').innerText = 'Description : ' + user.description;
 
-                                // Reset form fields
                                 document.querySelector('input[name="first_name"]').value = '';
                                 document.querySelector('input[name="last_name"]').value = '';
                                 document.querySelector('input[name="email"]').value = '';
@@ -321,7 +308,6 @@
                                 document.querySelector('input[name="description"]').value = '';
                             }
 
-                            // Redirect to the user's profile after 3 seconds
                             setTimeout(function() {
                                 window.location.href = "{{ route('user.profile') }}";
                             }, 2000);
@@ -331,7 +317,6 @@
             });
         });
 
-        // Replace 'api.user.services' with the actual URL of your endpoint if necessary.
         fetch("{{ route('api.user.services') }}", {
             headers: {
                 'Authorization': 'Bearer {{ auth()->user()->api_token }}',
@@ -360,6 +345,21 @@
                     <p>Fin: ${formattedEndDate}</p>
                     <p>Prix: ${service.cost} €</p>
                 `;
+
+                    if (service.service_type.type_name === 'Cours à domicile') {
+                        serviceElement.innerHTML += `
+                        <p>Adresse: ${service.address}</p>
+                        <p>Bâtiment: ${service.building.name}</p>
+                        <p>Salle: ${service.room.name}</p>
+                    `;
+                    }
+                    else if (service.service_type.type_name === 'Cours en ligne') {
+                        serviceElement.innerHTML += `
+                        <p>Lien du cours: <a href="${service.live_stream_url}" target="_blank"> YouTube</a></p>
+                    `;
+                    }
+
+                    console.log(service);
 
                     servicesContainer.appendChild(serviceElement);
                 });
