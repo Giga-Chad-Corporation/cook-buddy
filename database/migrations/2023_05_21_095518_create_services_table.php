@@ -19,7 +19,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->unsignedInteger('number_places')->default(1);
             $table->string('picture')->nullable();
-            $table->decimal('cost', 8, 2);  // add the cost field
+            $table->decimal('cost', 8, 2);
+            $table->string('live_stream_url')->nullable();
             $table->timestamps();
         });
     }
