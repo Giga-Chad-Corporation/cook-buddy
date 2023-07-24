@@ -34,8 +34,11 @@
                             </div>
 
                             <div class="form-group mt-2">
-                                <label for="number_places">Nombre de places</label>
-                                <input id="number_places" type="number" class="form-control" name="number_places" value="1">
+                                <label for="provider_id">Provider</label>
+                                <select id="provider_id" class="form-control" name="provider_id" required>
+                                    <option value="">Choisir un prestataire</option>
+
+                                </select>
                             </div>
 
                             <div class="form-group">
@@ -57,4 +60,44 @@
             </div>
         </div>
     </div>
+    <script>
+        const startDateTimeField = document.getElementById('start_date_time');
+        const endDateTimeField = document.getElementById('end_date_time');
+        const providerField = document.getElementById('provider_id');
+
+        // When the date/time fields change, fetch the available providers
+        startDateTimeField.addEventListener('change', fetchAvailableProviders);
+        endDateTimeField.addEventListener('change', fetchAvailableProviders);
+
+        function fetchAvailableProviders() {
+            const startDateTime = startDateTimeField.value;
+            const endDateTime = endDateTimeField.value;
+
+            if (startDateTime && endDateTime) {
+                fetch('/get-available-providers?start_date_time=' + startDateTime + '&end_date_time=' + endDateTime)
+                    .then(response => response.json())
+                    .then(providers => {
+                        // Clear the current provider options
+                        while (providerField.firstChild) {
+                            providerField.removeChild(providerField.firstChild);
+                        }
+
+                        // Add a default option
+                        const defaultOption = document.createElement('option');
+                        defaultOption.textContent = 'Choisir un prestataire';
+                        defaultOption.value = '';
+                        providerField.appendChild(defaultOption);
+
+                        // Add the new provider options
+                        providers.forEach(provider => {
+                            const option = document.createElement('option');
+                            option.textContent = provider.user.first_name + ' ' + provider.user.last_name;
+                            option.value = provider.id;
+                            providerField.appendChild(option);
+                        });
+                    });
+            }
+        }
+    </script>
+
 @endsection

@@ -5,9 +5,18 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">Créer Youtube Live</div>
+                    <div class="card-header">Créer un cours en ligne :</div>
                     <div class="card-body">
-                        <form method="POST" action="{{ route('services.store') }}" enctype="multipart/form-data" id="createCoursEnLigneForm">
+                        @if ($errors->any())
+                            <div class="alert alert-danger" >
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        <form method="POST" action="{{ route('services.store') }}" enctype="multipart/form-data">
                             @csrf
 
                             <input type="hidden" name="service_type_id" value="{{ $serviceType->id }}">
@@ -19,27 +28,8 @@
 
                             <div class="form-group mt-2">
                                 <label for="end_date_time">Date et heure de fin</label>
-                                <input id="end_date_time" type="datetime-local" class="form-control" name="end_date_time" required>
+                                <input id="end_date_time" type="datetime-local" class="form-control" name="end_date_time">
                             </div>
-
-                            <!-- YouTube Livestream Form -->
-                            <div class="form-group">
-                                <label for="youtube_title">YouTube Livestream Title</label>
-                                <input type="text" name="youtube_title" id="youtube_title" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="youtube_description">YouTube Livestream Description</label>
-                                <textarea name="youtube_description" id="youtube_description" class="form-control"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="youtube_start_date_time">YouTube Livestream Start Date and Time</label>
-                                <input type="datetime-local" name="youtube_start_date_time" id="youtube_start_date_time" class="form-control" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="youtube_end_date_time">YouTube Livestream End Date and Time</label>
-                                <input type="datetime-local" name="youtube_end_date_time" id="youtube_end_date_time" class="form-control" required>
-                            </div>
-                            <!-- End of YouTube Livestream Form -->
 
                             <div class="form-group mt-2">
                                 <label for="title">Titre</label>
@@ -49,6 +39,30 @@
                             <div class="form-group mt-2">
                                 <label for="description">Description</label>
                                 <textarea id="description" class="form-control" name="description"></textarea>
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label for="provider_id">Provider</label>
+                                <select id="provider_id" class="form-control" name="provider_id" required>
+                                    <option value="">Choisir un prestataire</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label for="building">Bâtiment</label>
+                                <select id="building" class="form-control" name="building" required>
+                                    <option value="">Sélectionner un bâtiment</option>
+                                    @foreach($buildings as $building)
+                                        <option value="{{ $building->id }}" data-rooms="{{ json_encode($building->rooms) }}">{{ $building->name }} - {{ $building->address }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group mt-2">
+                                <label for="room">Salle</label>
+                                <select id="room" class="form-control" name="room" required>
+                                    <option value="">Sélectionner une salle</option>
+                                </select>
                             </div>
 
                             <div class="form-group mt-2">
@@ -73,34 +87,74 @@
             </div>
         </div>
     </div>
-@endsection
 
-@section('scripts')
     <script>
-        $(document).ready(function () {
-            $('#createCoursEnLigneForm').submit(function (event) {
-                event.preventDefault();
+        // Populate the rooms select based on the selected building
+        function populateRooms() {
+            var buildingSelect = document.getElementById('building');
+            var roomSelect = document.getElementById('room');
+            var selectedBuildingId = buildingSelect.value;
 
-                var form = $(this);
+            // Fetch the available rooms
+            fetch(`/get-available-rooms?building_id=${selectedBuildingId}`)
+                .then(response => response.json())
+                .then(rooms => {
+                    // Clear the rooms select
+                    roomSelect.innerHTML = '<option value="">Sélectionner une salle</option>';
 
-                $.ajax({
-                    url: form.attr('action'),
-                    type: form.attr('method'),
-                    data: form.serialize(),
-                    dataType: 'json',
-                    success: function (response) {
-                        var broadcastId = response.broadcast_id;
-                        var streamId = response.stream_id;
-
-                        // Display the broadcast and stream IDs or perform any other action
-                        alert('Livestream created! Broadcast ID: ' + broadcastId + ', Stream ID: ' + streamId);
-                    },
-                    error: function (xhr) {
-                        var errorMessage = xhr.responseJSON.message;
-                        alert('Failed to create livestream: ' + errorMessage);
+                    // If rooms data is available, populate the rooms select
+                    if (rooms) {
+                        rooms.forEach(function(room) {
+                            var option = document.createElement('option');
+                            option.value = room.id;
+                            option.text = room.name;
+                            roomSelect.appendChild(option);
+                        });
                     }
                 });
-            });
-        });
+        }
+
+
+        // Event listener for building selection change
+        document.getElementById('building').addEventListener('change', populateRooms);
+
+        const startDateTimeField = document.getElementById('start_date_time');
+        const endDateTimeField = document.getElementById('end_date_time');
+        const providerField = document.getElementById('provider_id');
+
+        // When the date/time fields change, fetch the available providers
+        startDateTimeField.addEventListener('change', fetchAvailableProviders);
+        endDateTimeField.addEventListener('change', fetchAvailableProviders);
+
+        function fetchAvailableProviders() {
+            const startDateTime = startDateTimeField.value;
+            const endDateTime = endDateTimeField.value;
+
+            if (startDateTime && endDateTime) {
+                fetch('/get-available-providers?start_date_time=' + startDateTime + '&end_date_time=' + endDateTime)
+                    .then(response => response.json())
+                    .then(providers => {
+                        // Clear the current provider options
+                        while (providerField.firstChild) {
+                            providerField.removeChild(providerField.firstChild);
+                        }
+
+                        // Add a default option
+                        const defaultOption = document.createElement('option');
+                        defaultOption.textContent = 'Choisir un prestataire';
+                        defaultOption.value = '';
+                        providerField.appendChild(defaultOption);
+
+                        // Add the new provider options
+                        providers.forEach(provider => {
+                            const option = document.createElement('option');
+                            option.textContent = provider.user.first_name + ' ' + provider.user.last_name;
+                            option.value = provider.id;
+                            providerField.appendChild(option);
+                        });
+                    });
+            }
+        }
+
     </script>
 @endsection
