@@ -90,9 +90,10 @@ class ServiceController extends Controller
     {
         $admin = Auth::guard('admin')->user();
         $serviceType = ServiceType::where('type_name', 'Cours en ligne')->firstOrFail();
+        $buildings = Building::all();;
 
         if ($admin && $admin->is_super_admin) {
-            return view('formation.cours-en-ligne.create', compact('serviceType'));
+            return view('formation.cours-en-ligne.create', compact('serviceType', 'buildings'));
         } else {
             session()->put('error', 'Vous n\'avez pas les droits pour accéder à cette page.');
             return view('admin.users');
