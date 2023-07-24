@@ -355,9 +355,11 @@
                     }
                     else if (service.service_type.type_name === 'Cours en ligne') {
                         serviceElement.innerHTML += `
-                        <p>Lien du cours: ${service.live_stream_url}</p>
+                        <p>Lien du cours: <a href="${service.live_stream_url}" target="_blank"> YouTube</a></p>
                     `;
                     }
+
+                    console.log(service);
 
                     servicesContainer.appendChild(serviceElement);
                 });

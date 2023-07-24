@@ -128,7 +128,7 @@ class APIUserController extends Controller
             $service->provider = $service->users->first()->only(['id', 'username', 'first_name', 'last_name', 'profile_photo_path']);
             $service->service_type = $service->serviceType->only(['id', 'type_name']);
 
-            return $service->only(['id', 'title', 'start_date_time', 'end_date_time', 'cost', 'service_type', 'provider']);
+            return $service->only(['id', 'title', 'start_date_time', 'end_date_time', 'cost', 'live_stream_url', 'service_type', 'provider']);
         });
 
         return response()->json(['services' => $servicesWithProvider]);
