@@ -40,6 +40,9 @@ class ServiceController extends Controller
             $query->where('available_date', $startDate->format('Y-m-d'))
                 ->whereTime('start_time', '<=', $startDate->format('H:i:s'))
                 ->whereTime('end_time', '>=', $endDate->format('H:i:s'));
+        })->whereDoesntHave('services', function ($query) use ($startDate, $endDate) {
+            $query->whereBetween('start_date_time', [$startDate->format('Y-m-d H:i:s'), $endDate->format('Y-m-d H:i:s')])
+                ->orWhereBetween('end_date_time', [$startDate->format('Y-m-d H:i:s'), $endDate->format('Y-m-d H:i:s')]);
         })->whereHas('providerType', function ($query) use ($providerTypes) {
             $query->whereIn('type_name', $providerTypes);
         })->get();
@@ -51,6 +54,7 @@ class ServiceController extends Controller
 
         return response()->json($providers);
     }
+
 
 
     public function createCoursADomicile()
@@ -160,7 +164,7 @@ class ServiceController extends Controller
 
         $service->save();
 
-        // Attach the provider to the service
+        // Attach the provider to the servicea
         $service->providers()->attach($providerId, [
             'commission' => $commission,
             'created_at' => now(),
