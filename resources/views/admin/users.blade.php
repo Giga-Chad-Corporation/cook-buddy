@@ -18,46 +18,142 @@
                         @if(session('isAdmin'))
                             <div class="d-flex justify-content-between mb-3">
                                 <h4>Liste des utilisateurs :</h4>
-                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                        data-bs-target="#addUserModal">
                                     +
                                 </button>
                             </div>
 
                             <table class="table table-striped">
                                 <thead>
-                                    <tr>
-                                        <th scope="col">Email</th>
-                                        <th scope="col">Prénom</th>
-                                        <th scope="col">Nom</th>
-                                        <th scope="col">Plan</th>
-                                        <th scope="col">Actions</th>
-                                    </tr>
+                                <tr>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Prénom</th>
+                                    <th scope="col">Nom</th>
+                                    <th scope="col">Plan</th>
+                                    <th scope="col">Actions</th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    @if(isset($users))
-                                        @foreach ($users as $user)
-                                            <tr>
-                                                <td>{{ $user->email }}</td>
-                                                <td>{{ $user->first_name }}</td>
-                                                <td>{{ $user->last_name }}</td>
-                                                <td>{{ $user->subscription->plan->name }}</td>
-                                                <td>
-                                                    <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" id="deleteForm{{ $user->id }}">
+                                @if(isset($users))
+                                    @foreach ($users as $user)
+                                        <tr>
+                                            <td>{{ $user->email }}</td>
+                                            <td>{{ $user->first_name }}</td>
+                                            <td>{{ $user->last_name }}</td>
+                                            <td>{{ $user->subscription->plan->name }}</td>
+                                            <td>
+                                                <form action="{{ route('admin.users.destroy', $user->id) }}"
+                                                      method="POST" id="deleteForm{{ $user->id }}">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="button" class="btn btn-danger"
+                                                            onclick="confirmDelete({{ $user->id }})">Supprimer
+                                                    </button>
+                                                </form>
+                                                <button type="button" class="btn btn-primary mt-1"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#updateItemModal-{{$user->id}}">modifier
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <div class="modal" id="updateItemModal-{{ $user->id }}" tabindex="-1"
+                                             role="dialog">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Modifier un article</h5>
+                                                        <button type="button" class="close" data-bs-dismiss="modal"
+                                                                aria-label="Fermer">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <form action="{{ route('admin.users.update', $user->id) }}"
+                                                          method="POST">
                                                         @csrf
-                                                        @method('DELETE')
-                                                        <button type="button" class="btn btn-danger" onclick="confirmDelete({{ $user->id }})">Supprimer</button>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    @endif
-                                </tbody>
-                            </table>
-                        @endif
+                                                        @method('PUT')
+                                                        <div class="modal-body">
+                                                            <!-- Your form inputs here -->
+                                                            <!-- For example: -->
+
+                                                            <div class="modal-body">
+                                                                <div class="form-group">
+                                                                    <label for="email-{{ $user->id }}">Email</label>
+                                                                    <input type="email" class="form-control" id="email"
+                                                                           name="email" value="{{ $user->email }}"
+                                                                           required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="last_name-{{ $user->id }}">Nom</label>
+                                                                    <input type="text" class="form-control"
+                                                                           id="last_name-{{ $user->id }}"
+                                                                           name="last_name"
+                                                                           value="{{ $user->last_name }}" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="password">Password</label>
+                                                                    <input type="password" class="form-control"
+                                                                           id="password" name="password" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="username">Nom d'utilisateur</label>
+                                                                    <input type="text" class="form-control"
+                                                                           id="username" name="username"
+                                                                           value="{{ $user->username }}" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="first_name">Prénom</label>
+                                                                    <input type="text" class="form-control"
+                                                                           id="first_name" name="first_name"
+                                                                           value="{{ $user->first_name }}" required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="phone">Numéro de téléphone</label>
+                                                                    <input type="text" class="form-control" id="phone"
+                                                                           name="phone"
+                                                                           pattern="^(?:0|\(?\+33\)?\s?|0033\s?)[1-79](?:[\.\-\s]?\d\d){4}$"
+                                                                           value="{{ $user->phone }}"
+                                                                           required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="address">Adresse</label>
+                                                                    <input type="text" class="form-control" id="address"
+                                                                           name="address" value="{{ $user->address }}"
+                                                                           required>
+                                                                </div>
+                                                                <label for="plan_id">Abo</label>
+                                                                <select class="form-control" id="plan_id"
+                                                                        name="plan_id">
+                                                                    @foreach ($plans as $plan)
+                                                                        <option
+                                                                            value="{{ $plan->id }}">{{ $plan->name }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            <!-- Similarly, add other fields and prepopulate them with the existing values -->
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">Fermer
+                                                            </button>
+                                                            <button type="submit" class="btn btn-primary">Modifier
+                                                            </button>
+                                                        </div>
+                                                </div>
+                                                </form>
+
+                                            </div>
+                                        </div>
                     </div>
+                    @endforeach
+                    @endif
+                    </tbody>
+                    </table>
+                    @endif
                 </div>
             </div>
         </div>
+    </div>
     </div>
 
     <div class="modal" id="addUserModal" tabindex="-1" role="dialog">
@@ -94,7 +190,8 @@
                         </div>
                         <div class="form-group">
                             <label for="phone">Numéro de téléphone</label>
-                            <input type="text" class="form-control" id="phone" name="phone" pattern="^(?:0|\(?\+33\)?\s?|0033\s?)[1-79](?:[\.\-\s]?\d\d){4}$" required>
+                            <input type="text" class="form-control" id="phone" name="phone"
+                                   pattern="^(?:0|\(?\+33\)?\s?|0033\s?)[1-79](?:[\.\-\s]?\d\d){4}$" required>
                         </div>
                         <div class="form-group">
                             <label for="address">Adresse</label>
@@ -105,14 +202,16 @@
                                 <label for="is_admin">Administrateur</label>
                                 <input type="checkbox" class="form-check-input" id="is_admin" name="is_admin">
                             </div>
-                            <div id="adminDetails" style="display: none; border: 1px solid black; border-radius: 6px; padding: 8px">
+                            <div id="adminDetails"
+                                 style="display: none; border: 1px solid black; border-radius: 6px; padding: 8px">
                                 <div class="form-group mb-3 mt-1">
                                     <label for="admin_email">Email Admin</label>
                                     <input type="email" class="form-control" id="admin_email" name="admin_email">
                                 </div>
                                 <div class="form-group mb-3 mt-1">
                                     <label for="admin_password">Mot de Passe Admin</label>
-                                    <input type="password" class="form-control" id="admin_password" name="admin_password">
+                                    <input type="password" class="form-control" id="admin_password"
+                                           name="admin_password">
                                 </div>
                                 <div class="form-group mb-3 mt-1">
                                     <label for="super">Super Admin</label>
@@ -122,23 +221,28 @@
                                 <div class="d-flex justify-content-between mb-3">
                                     <div class="form-group">
                                         <label for="manage_admins">Admins</label>
-                                        <input type="checkbox" class="form-check-input" id="manage_admins" name="manage_admins">
+                                        <input type="checkbox" class="form-check-input" id="manage_admins"
+                                               name="manage_admins">
                                     </div>
                                     <div class="form-group">
                                         <label for="manage_users">Utilisateurs</label>
-                                        <input type="checkbox" class="form-check-input" id="manage_users" name="manage_users">
+                                        <input type="checkbox" class="form-check-input" id="manage_users"
+                                               name="manage_users">
                                     </div>
                                     <div class="form-grou">
                                         <label for="manage_providers">Prestataires</label>
-                                        <input type="checkbox" class="form-check-input" id="manage_providers" name="manage_providers">
+                                        <input type="checkbox" class="form-check-input" id="manage_providers"
+                                               name="manage_providers">
                                     </div>
                                     <div class="form-group">
                                         <label for="manage_services">Services</label>
-                                        <input type="checkbox" class="form-check-input" id="manage_services" name="manage_services">
+                                        <input type="checkbox" class="form-check-input" id="manage_services"
+                                               name="manage_services">
                                     </div>
                                     <div class="form-group">
                                         <label for="manage_plans">Abonnements</label>
-                                        <input type="checkbox" class="form-check-input" id="manage_plans" name="manage_plans">
+                                        <input type="checkbox" class="form-check-input" id="manage_plans"
+                                               name="manage_plans">
                                     </div>
                                 </div>
                             </div>
@@ -152,11 +256,16 @@
                         <div class="container-fluid">
                             <div class="row justify-content-between">
                                 <div class="col">
-                                    <button type="button" class="btn btn-primary" id="showDetailsBtn">Afficher les détails</button>
-                                    <button type="button" class="btn btn-primary" id="hideDetailsBtn" style="display: none;">Masquer les détails</button>
+                                    <button type="button" class="btn btn-primary" id="showDetailsBtn">Afficher les
+                                        détails
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="hideDetailsBtn"
+                                            style="display: none;">Masquer les détails
+                                    </button>
                                 </div>
                                 <div class="col-auto">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer
+                                    </button>
                                     <button type="submit" class="btn btn-primary">Ajouter</button>
                                 </div>
                             </div>
@@ -199,6 +308,7 @@
                 adminDetailsSection.style.display = 'none';
             }
         }
+
         document.getElementById('is_admin').addEventListener('change', toggleAdminDetails);
         toggleAdminDetails();
 
@@ -231,6 +341,7 @@
                 managePlansCheckbox.disabled = false;
             }
         }
+
         document.getElementById('super').addEventListener('change', superAdminChecked);
     </script>
 

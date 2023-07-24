@@ -45,8 +45,48 @@
                                                     Supprimer
                                                 </button>
                                             </form>
+                                            <button type="button" class="btn btn-primary mt-1"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#updateItemModal-{{$tag->id}}">modifier
+                                            </button>
                                         </td>
                                     </tr>
+                                    <div class="modal" id="updateItemModal-{{ $tag->id }}" tabindex="-1"
+                                         role="dialog">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Modifier un article</h5>
+                                                    <button type="button" class="close" data-bs-dismiss="modal"
+                                                            aria-label="Fermer">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <form action="{{ route('admin.tag.update', $tag->id) }}"
+                                                      method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <div class="modal-body">
+                                                        <!-- Your form inputs here -->
+                                                        <!-- For example: -->
+                                                        <div class="form-group">
+                                                            <label for="tag_name-{{ $tag->id }}">Nom</label>
+                                                            <input type="text" class="form-control"
+                                                                   id="tag_name-{{ $tag->id }}" name="name"
+                                                                   value="{{ $tag->name }}" required>
+                                                        </div>
+                                                        <!-- Similarly, add other fields and prepopulate them with the existing values -->
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Fermer
+                                                        </button>
+                                                        <button type="submit" class="btn btn-primary">Modifier</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endforeach
                                 </tbody>
                             </table>

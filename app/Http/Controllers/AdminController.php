@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Admin;
 use App\Models\Item;
 use App\Models\ItemType;
+use App\Models\Plan;
 use App\Models\Tag;
 use App\Models\Subscription;
 use App\Models\User;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use Nette\Utils\Type;
 
 class AdminController extends Controller
 {
@@ -55,6 +57,7 @@ class AdminController extends Controller
 
     public function users(string $error = null)
     {
+
         session()->forget('error');
         if ($error) {
             session()->put('error', $error);
@@ -63,7 +66,8 @@ class AdminController extends Controller
         $admin = Auth::guard('admin')->user();
         if ($admin->is_super_admin || $admin->manage_users) {
             $users = User::with('subscription.plan:id,name')->get();
-            return view('admin.users', compact('users'));
+            $plans = Plan::all();
+            return view('admin.users', compact('users', 'plans'));
         } else {
             session()->put('error', 'Vous n\'avez pas les droits pour accéder à cette page.');
             return view('admin.users');
@@ -149,6 +153,51 @@ class AdminController extends Controller
             return view('admin.users');
         }
     }
+    public function updateUser(Request $request, $id)
+    {
+        $admin = Auth::guard('admin')->user();
+        if ($admin->is_super_admin || $admin->manage_Services) {
+            $user = User::find($id);
+            $user->email = $request->email;
+            $user->password = Hash::make($request->password);
+            $user->username = $request->username;
+            $user->first_name = $request->first_name;
+            $user->last_name = $request->last_name;
+            $user->phone = $request->phone;
+            $user->address = $request->address;
+            $user->description = $request->description;
+
+            $user->save();
+
+            $subscription = Subscription::all()->where('user_id', $id)->first();
+            $subscription->plan_id = $request->plan_id;
+
+            $subscription->save();
+
+//            if ($request->is_admin) {
+//                $admin = new Admin();
+//                $admin->user_id = $user->id;
+//                $admin->email = $request->admin_email;
+//                $admin->password = Hash::make($request->admin_password);
+//                $admin->is_super_admin = $this->convertToBoolean($request->is_super_admin);
+//                $admin->manage_admins = $this->convertToBoolean($request->manage_admins);
+//                $admin->manage_users = $this->convertToBoolean($request->manage_users);
+//                $admin->manage_providers = $this->convertToBoolean($request->manage_providers);
+//                $admin->manage_services = $this->convertToBoolean($request->manage_services);
+//                $admin->manage_plans = $this->convertToBoolean($request->manage_plans);
+//                $admin->save();
+//
+//                return redirect()->route('admin.types');
+//            } else {
+//                session()->put('error', 'L\'article que vous essayez de mettre à jour n\'existe pas.');
+//                return view('admin.types');
+//            }
+            return redirect()->route('admin.users');
+        } else {
+            session()->put('error', 'Vous n\'avez pas les droits pour mettre à jour cet article.');
+            return view('admin.users');
+        }
+    }
     ///////////////////////////////////////TYPES//////////////////////////////////////////
     public function types()
     {
@@ -193,6 +242,25 @@ class AdminController extends Controller
             return view('admin.types');
         }
     }
+    public function updateType(Request $request, $id)
+    {
+        $admin = Auth::guard('admin')->user();
+        if ($admin->is_super_admin || $admin->manage_Services) {
+            $type = ItemType::find($id);
+            if ($type) {
+                $type->type_name = $request->type_name;
+                $type->save();
+
+                return redirect()->route('admin.types');
+            } else {
+                session()->put('error', 'L\'article que vous essayez de mettre à jour n\'existe pas.');
+                return view('admin.types');
+            }
+        } else {
+            session()->put('error', 'Vous n\'avez pas les droits pour mettre à jour cet article.');
+            return view('admin.types');
+        }
+    }
     ///////////////////////////////////////TYPES//////////////////////////////////////////
     ///////////////////////////////////////TAGS//////////////////////////////////////////
     public function tags()
@@ -233,6 +301,25 @@ class AdminController extends Controller
             return redirect()->route('admin.tags');
         } else {
             session()->put('error', 'Vous n\'avez pas les droits pour créer un nouveau type.');
+            return view('admin.tags');
+        }
+    }
+    public function updateTag(Request $request, $id)
+    {
+        $admin = Auth::guard('admin')->user();
+        if ($admin->is_super_admin || $admin->manage_Services) {
+            $tag = Tag::find($id);
+            if ($tag) {
+                $tag->name = $request->name;
+                $tag->save();
+
+                return redirect()->route('admin.tags');
+            } else {
+                session()->put('error', 'L\'article que vous essayez de mettre à jour n\'existe pas.');
+                return view('admin.tags');
+            }
+        } else {
+            session()->put('error', 'Vous n\'avez pas les droits pour mettre à jour cet article.');
             return view('admin.tags');
         }
     }

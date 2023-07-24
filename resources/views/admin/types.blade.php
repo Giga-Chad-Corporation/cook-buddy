@@ -40,11 +40,53 @@
                                             <form action="{{ route('admin.types.destroy', $type->id) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger" onclick="return confirm('Voulez-vous vraiment supprimer cet élément ?');">Supprimer</button>
+                                                <button type="submit" class="btn btn-danger"
+                                                        onclick="return confirm('Voulez-vous vraiment supprimer cet élément ?');">
+                                                    Supprimer
+                                                </button>
                                             </form>
-
+                                            <button type="button" class="btn btn-primary mt-1"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#updateItemModal-{{$type->id}}">modifier
+                                            </button>
                                         </td>
                                     </tr>
+                                    <div class="modal" id="updateItemModal-{{ $type->id }}" tabindex="-1"
+                                         role="dialog">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Modifier un article</h5>
+                                                    <button type="button" class="close" data-bs-dismiss="modal"
+                                                            aria-label="Fermer">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <form action="{{ route('admin.types.update', $type->id) }}"
+                                                      method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <div class="modal-body">
+                                                        <!-- Your form inputs here -->
+                                                        <!-- For example: -->
+                                                        <div class="form-group">
+                                                            <label for="type_name-{{ $type->id }}">Nom</label>
+                                                            <input type="text" class="form-control"
+                                                                   id="type_name-{{ $type->id }}" name="type_name"
+                                                                   value="{{ $type->type_name }}" required>
+                                                        </div>
+                                                        <!-- Similarly, add other fields and prepopulate them with the existing values -->
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Fermer
+                                                        </button>
+                                                        <button type="submit" class="btn btn-primary">Modifier</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endforeach
                                 </tbody>
                             </table>

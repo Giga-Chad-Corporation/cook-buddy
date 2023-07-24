@@ -114,7 +114,8 @@
                                                             <select class="form-control"
                                                                     id="tag_id-{{ $article->id }}" name="tag_id">
                                                                 @foreach ($tags as $tag)
-                                                                    <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+                                                                    <option
+                                                                        value="{{ $tag->id }}">{{ $tag->name }}</option>
                                                                 @endforeach
 
                                                             </select>

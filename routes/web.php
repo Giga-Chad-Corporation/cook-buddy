@@ -46,15 +46,18 @@ Route::middleware(['web'])->group(function () {
     Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
     Route::post('/admin/users', [AdminController::class, 'createUser'])->name('admin.users.store');
     Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser'])->name('admin.users.destroy');
+    Route::put('/users/{users}', [AdminController::class, 'updateUser'])->name('admin.users.update');
 
     Route::get('/admin/types', [AdminController::class, 'types'])->name('admin.types');
     Route::post('/admin/types', [AdminController::class, 'createType'])->name('admin.types.store');
     Route::delete('/admin/types/{id}', [AdminController::class, 'deleteType'])->name('admin.types.destroy');
+    Route::put('/types/{types}', [AdminController::class, 'updateType'])->name('admin.types.update');
 
 
     Route::get('/admin/tags', [AdminController::class, 'tags'])->name('admin.tags');
     Route::post('/admin/tags', [AdminController::class, 'createTag'])->name('admin.tags.store');
     Route::delete('/admin/tags/{id}', [AdminController::class, 'deleteTag'])->name('admin.tags.destroy');
+    Route::put('/tag/{tag}', [AdminController::class, 'updateTag'])->name('admin.tag.update');
 
     Route::get('/admin/items', [AdminController::class, 'articles'])->name('admin.items');
     Route::post('/admin/items', [AdminController::class, 'createArticles'])->name('admin.items.store');
