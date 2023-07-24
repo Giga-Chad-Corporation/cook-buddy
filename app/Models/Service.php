@@ -15,10 +15,12 @@ class Service extends Model
         'cost',
     ];
 
-    public function provider()
+    public function providers()
     {
-        return $this->belongsTo(Provider::class);
+        return $this->belongsToMany(Provider::class, 'service_provider')->withPivot('commission');
     }
+
+
 
     public function users()
     {

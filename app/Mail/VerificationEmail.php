@@ -11,17 +11,17 @@ class VerificationEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $verificationLink;
+    public $verificationUrl;
 
     /**
      * Create a new message instance.
      *
-     * @param  string  $verificationLink
+     * @param  string  $verificationUrl
      * @return void
      */
-    public function __construct($verificationLink)
+    public function __construct($verificationUrl)
     {
-        $this->verificationLink = $verificationLink;
+        $this->verificationUrl = $verificationUrl;
     }
 
     /**
@@ -32,10 +32,9 @@ class VerificationEmail extends Mailable
     public function build()
     {
         return $this->subject('Verify Your Email')
-            ->markdown('emails.verification')
+            ->markdown('emails.verification')  // Change back to 'markdown' to use components
             ->with([
-                'verificationLink' => $this->verificationLink,
+                'verificationUrl' => $this->verificationUrl,
             ]);
     }
 }
-
