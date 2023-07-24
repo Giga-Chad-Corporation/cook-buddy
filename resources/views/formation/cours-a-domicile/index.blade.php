@@ -26,22 +26,17 @@
                                         </div>
                                         <div class="col-3 mt-3">
                                             <h6 style="font-weight: bold">Prestataire :</h6>
-                                            @if ($service->users->count() > 0)
-                                                @foreach ($service->users as $user)
-                                                    @if ($user->provider)
-                                                        <p>{{ $user->first_name }} {{ $user->last_name }}</p>
-                                                        <p>{{ $user->email }}</p>
-                                                        @if ($user->phone)
-                                                            <p>{{ $user->phone }}</p>
+                                                @foreach ($service->providers as $provider)
+                                                        <p>{{ $provider->user->last_name }}, {{ $provider->user->first_name }}</p>
+                                                        <p>{{ $provider->user->email }}</p>
+                                                        @if ($provider->user->phone)
+                                                            <p>{{ $provider->user->phone }}</p>
                                                         @endif
-                                                        @if ($user->description)
-                                                            <p>{{ $user->description }}</p>
+                                                        @if ($provider->user->description)
+                                                            <p>{{ $provider->userdescription }}</p>
                                                         @endif
-                                                    @endif
                                                 @endforeach
-                                            @else
-                                                <p>No provider information available.</p>
-                                            @endif
+
                                         </div>
                                     </li>
                                 @endforeach
