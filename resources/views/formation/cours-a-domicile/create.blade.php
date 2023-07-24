@@ -37,10 +37,6 @@
                                 <label for="provider_id">Provider</label>
                                 <select id="provider_id" class="form-control" name="provider_id" required>
                                     <option value="">Choisir un prestataire</option>
-{{--                                    @foreach($providers as $provider)--}}
-{{--                                        <option value="{{ $provider->id }}">{{ $provider->user->first_name . ' ' . $provider->user->last_name }}</option>--}}
-{{--                                    @endforeach--}}
-
 
                                 </select>
                             </div>

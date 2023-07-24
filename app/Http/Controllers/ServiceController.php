@@ -23,7 +23,8 @@ use Google\Service\YouTube\LiveBroadcastStatus as Google_Service_YouTube_LiveBro
 class ServiceController extends Controller
 {
 
-    public function getAvailableProviders(Request $request) {
+    public function getAvailableProviders(Request $request)
+    {
         // Define the provider types
         $providerTypes = ['Chef cuisinier'];
 
@@ -35,11 +36,11 @@ class ServiceController extends Controller
             $query->where('available_date', $startDate->format('Y-m-d'))
                 ->whereTime('start_time', '<=', $startDate->format('H:i:s'))
                 ->whereTime('end_time', '>=', $endDate->format('H:i:s'));
-        }, 'user'])->whereHas('regions', function($query) use ($startDate, $endDate) {
+        }, 'user'])->whereHas('regions', function ($query) use ($startDate, $endDate) {
             $query->where('available_date', $startDate->format('Y-m-d'))
                 ->whereTime('start_time', '<=', $startDate->format('H:i:s'))
                 ->whereTime('end_time', '>=', $endDate->format('H:i:s'));
-        })->whereHas('providerType', function($query) use ($providerTypes) {
+        })->whereHas('providerType', function ($query) use ($providerTypes) {
             $query->whereIn('type_name', $providerTypes);
         })->get();
 
@@ -50,8 +51,6 @@ class ServiceController extends Controller
 
         return response()->json($providers);
     }
-
-
 
 
     public function createCoursADomicile()
@@ -66,9 +65,6 @@ class ServiceController extends Controller
             return view('admin.users');
         }
     }
-
-
-
 
 
     public function ateliers()
@@ -113,8 +109,6 @@ class ServiceController extends Controller
     }
 
 
-
-
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -128,8 +122,10 @@ class ServiceController extends Controller
             'number_places' => 'integer|nullable',
             'service_type_id' => 'required|exists:service_types,id',
             'cost' => 'required|numeric|min:0',
-            'picture' => 'image|mimes:jpeg,png,jpg,gif|max:2048' // Add validation rules for the picture
+            'provider_id' => 'required|exists:providers,id', // Add validation for provider
+            'picture' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
+
 
         $validator->sometimes('end_date_time', 'after:start_date_time', function ($input) {
             return isset($input->start_date_time);
@@ -148,6 +144,12 @@ class ServiceController extends Controller
         $service->service_type_id = $request->input('service_type_id');
         $service->cost = $request->input('cost');
 
+        $providerId = $request->input('provider_id');
+        $commission = 5; // Use the actual commission value here
+
+
+
+
         if ($request->hasFile('picture')) {
             $file = $request->file('picture');
             $extension = $file->getClientOriginalExtension();
@@ -158,12 +160,13 @@ class ServiceController extends Controller
 
         $service->save();
 
-        $user = Auth::user();
-
-        $user->services()->attach($service->id, [
+        // Attach the provider to the service
+        $service->providers()->attach($providerId, [
+            'commission' => $commission,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+
 
         // Check if the service is an atelier or formations professionnelles
         $serviceType = ServiceType::findOrFail($request->input('service_type_id'));
@@ -177,14 +180,8 @@ class ServiceController extends Controller
             ]);
         }
 
-        return redirect()->route('user.profile')->with('success', 'Service created successfully.');
+        return redirect()->route('formation')->with('success', 'Service created successfully.');
     }
-
-
-
-
-
-
 
 
     public function addServiceToUser(Request $request)
@@ -237,77 +234,5 @@ class ServiceController extends Controller
 
         return response()->json(['message' => 'Unauthorized.'], 401);
     }
-
-//    public function createYouTubeLivestream(Request $request)
-//    {
-//        // Validate the request data
-//        $request->validate([
-//            'title' => 'required',
-//            'description' => 'nullable',
-//            'start_date_time' => 'required|date',
-//            'end_date_time' => 'required|date|after:start_date_time',
-//        ]);
-//
-//        // Create a new YouTube Live Broadcast
-//        $client = new Google_Client();
-//        $client->setDeveloperKey(config('services.google.youtube_key'));
-//
-//        $youtube = new Google_Service_YouTube($client);
-//
-//        // Create a Live Broadcast object
-//        $broadcast = new Google_Service_YouTube_LiveBroadcast();
-//
-//        // Set the broadcast snippet
-//        $snippet = new Google_Service_YouTube_LiveBroadcastSnippet();
-//        $snippet->setTitle($request->input('title'));
-//        $snippet->setDescription($request->input('description'));
-//        $snippet->setScheduledStartTime($request->input('start_date_time'));
-//        $snippet->setScheduledEndTime($request->input('end_date_time'));
-//
-//        $broadcast->setSnippet($snippet);
-//
-//        // Set the broadcast status
-//        $status = new Google_Service_YouTube_LiveBroadcastStatus();
-//        $status->setPrivacyStatus('private'); // Set the privacy status as per your requirement
-//
-//        $broadcast->setStatus($status);
-//
-//        // Insert the live broadcast
-//        $broadcast = $youtube->liveBroadcasts->insert('snippet,status', $broadcast);
-//
-//        // Create a Live Stream object
-//        $stream = new Google_Service_YouTube_LiveStream();
-//
-//        // Set the stream snippet
-//        $streamSnippet = new Google_Service_YouTube_LiveStreamSnippet();
-//        $streamSnippet->setTitle($request->input('title'));
-//        $streamSnippet->setScheduledStartTime($request->input('start_date_time'));
-//        $streamSnippet->setScheduledEndTime($request->input('end_date_time'));
-//
-//        $stream->setSnippet($streamSnippet);
-//
-//        // Set the stream details
-//        // ...
-//
-//        // Insert the live stream
-//        $stream = $youtube->liveStreams->insert('snippet,status', $stream);
-//
-//        // Bind the live broadcast with the live stream
-//        $bindRequest = $youtube->liveBroadcasts->bind($broadcast->id, 'id,contentDetails');
-//        $bindRequest->setStreamId($stream->id);
-//        $bindResponse = $bindRequest->execute();
-//
-//        // Retrieve the broadcast and stream IDs
-//        $broadcastId = $bindResponse->id;
-//        $streamId = $bindResponse->contentDetails->boundStreamId;
-//
-//        // Return the IDs or any other relevant data as needed
-//        return response()->json([
-//            'broadcast_id' => $broadcastId,
-//            'stream_id' => $streamId,
-//        ]);
-//    }
-
-
 
 }
