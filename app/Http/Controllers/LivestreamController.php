@@ -19,7 +19,7 @@ class LivestreamController extends Controller
         $client->setDeveloperKey(config('services.youtube.key'));
         $client->setClientId('560651328457-17rjjeg47vhiea91uai10pdqu6oeerv1.apps.googleusercontent.com');
         $client->setClientSecret('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');
-        $client->setRedirectUri('http://localhost:8000/livestream/create');
+        $client->setRedirectUri('https://cook-buddy.gccorp.fr/livestream/create');
         $client->setScopes([
             'https://www.googleapis.com/auth/youtube',
             'https://www.googleapis.com/auth/youtube.force-ssl',

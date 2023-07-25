@@ -19,13 +19,11 @@ class ServiceController extends Controller
 
     public function getAvailableProviders(Request $request)
     {
-        // Define the provider types
         $providerTypes = ['Chef cuisinier'];
 
         $startDate = Carbon::createFromFormat('Y-m-d\TH:i', $request->start_date_time);
         $endDate = Carbon::createFromFormat('Y-m-d\TH:i', $request->end_date_time);
 
-        // Fetch all providers who have availability during the service time
         $providers = Provider::with(['regions' => function ($query) use ($startDate, $endDate) {
             $query->where('available_date', $startDate->format('Y-m-d'))
                 ->whereTime('start_time', '<=', $startDate->format('H:i:s'))
@@ -41,7 +39,6 @@ class ServiceController extends Controller
             $query->whereIn('type_name', $providerTypes);
         })->get();
 
-        // Filter out providers with no regions available
         $providers = $providers->reject(function ($provider) {
             return $provider->regions->isEmpty();
         });
@@ -144,7 +141,7 @@ class ServiceController extends Controller
             'number_places' => 'integer|nullable',
             'service_type_id' => 'required|exists:service_types,id',
             'cost' => 'required|numeric|min:0',
-            'provider_id' => 'required|exists:providers,id', // Add validation for provider
+            'provider_id' => 'required|exists:providers,id',
             'picture' => 'image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
@@ -166,7 +163,7 @@ class ServiceController extends Controller
         $service->cost = $request->input('cost');
 
         $providerId = $request->input('provider_id');
-        $commission = 5; // Use the actual commission value here
+        $commission = 5; 
 
         if ($request->hasFile('picture')) {
             $file = $request->file('picture');
@@ -178,17 +175,14 @@ class ServiceController extends Controller
 
         $service->save();
 
-        // Attach the provider to the service
         $service->providers()->attach($providerId, [
             'commission' => $commission,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
-        // Check if the service is an atelier or formations professionnelles
         $serviceType = ServiceType::findOrFail($request->input('service_type_id'));
         if ($serviceType->type_name === 'Ateliers' || $serviceType->type_name === 'Formations professionnelles') {
-            // Create the service_building relationship
             $buildingId = $request->input('building');
             $building = Building::findOrFail($buildingId);
             $service->buildings()->attach($building, [
@@ -196,14 +190,13 @@ class ServiceController extends Controller
                 'updated_at' => Carbon::now(),
             ]);
 
-            // New code: fetch and update the room
             $roomId = $request->input('room');
             $room = Room::findOrFail($roomId);
             if ($service->number_places > $room->max_capacity) {
                 return redirect()->back()->withErrors(['The number of places exceeds the room\'s capacity.'])->withInput();
             }
             $room->is_reserved = true;
-            $room->save();
+            // $room->save();
         }
         if ($serviceType->type_name === 'Cours en ligne') {
             session()->put('liveStreamData', [
@@ -239,7 +232,6 @@ class ServiceController extends Controller
             return response()->json(['message' => 'Les prestataires ne peuvent pas participer'], 403);
         }
 
-        // Check if the user has an address
         if ($user && !$user->address) {
             return response()->json(['message' => 'Ajouter votre addresse s\'il vous plait'], 403);
         }
