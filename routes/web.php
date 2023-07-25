@@ -13,6 +13,7 @@ use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\ProviderController;
+use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ShopController;
@@ -34,6 +35,7 @@ Route::middleware(['web'])->group(function () {
         Route::get('shop', function () {
             return view('shop');
         })->name('shop');
+
 
     Route::get('user/profile', function () {
         return view('user.profile');
@@ -78,8 +80,8 @@ Route::middleware(['web'])->group(function () {
     Route::get('/get-room-details', [RoomController::class,'getRoomDetails'])->name('getRoomDetails');
     Route::get('/get-available-rooms', [RoomController::class,'getAvailableRooms'])->name('getAvailableRooms');
 
-
-
+    Route::get('/reservation', [ReservationController::class, 'create'])->name('reservation.create');
+    Route::post('/reservation', [ReservationController::class, 'store'])->name('reservation.store');
 
     Route::get('/livestream/authorize', [LivestreamController::class, 'authorizeYouTube'])->name('livestream.authorize');
     Route::get('/livestream/create', [LivestreamController::class, 'createYouTubeLivestream'])->name('livestream.create');

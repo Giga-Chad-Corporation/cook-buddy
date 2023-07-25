@@ -161,7 +161,7 @@ class ServiceController extends Controller
         $service->end_date_time = $request->input('end_date_time');
         $service->title = $request->input('title');
         $service->description = $request->input('description');
-        $service->number_places = $request->input('number_places');
+        $service->number_places = $request->filled('number_places') ? $request->input('number_places') : 1;
         $service->service_type_id = $request->input('service_type_id');
         $service->cost = $request->input('cost');
 
@@ -216,16 +216,6 @@ class ServiceController extends Controller
 
             return redirect()->route('livestream.authorize');
         }
-
-        $room = Room::find($request->input('room_id'));
-        $numberPlaces = $request->input('number_places');
-
-        if ($numberPlaces > $room->max_capacity && $serviceType->type_name != 'Cours en ligne') {
-            return back()->withErrors([
-                'number_places' => 'The number of places cannot exceed the maximum capacity of the room, which is ' . $room->max_capacity . '.'
-            ])->withInput();
-        }
-
 
         return redirect()->route('formation')->with('success', 'Service created successfully.');
     }
