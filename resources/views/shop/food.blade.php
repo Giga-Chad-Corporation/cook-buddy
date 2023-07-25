@@ -4,44 +4,40 @@
     <div class="container">
         <h1 class="mt-5 mb-5">Commandez nos plats cuisinés</h1>
 
+        <!-- Search input -->
+        <input type="text" id="search" name="search" class="form-control mb-3" placeholder="Search by name">
+
         <!-- Message container -->
         <div id="message" class="alert d-none"></div>
 
-        <div class="row">
-            @foreach($items as $item)
-                <div class="col-md-4">
-                    <div class="card mb-4 h-100">
-                        <!-- Add image here -->
-                        <img src="{{ $item->picture_url }}" class="card-img-top card-img" alt="{{ $item->model_name }}">
-
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <!-- Title at the left below the image -->
-                                <h5 class="card-title">{{ $item->model_name }}</h5>
-                                <!-- Price at the right below the image -->
-                                <p class="card-text">{{ $item->selling_price }}€</p>
-                            </div>
-                            <!-- Add to Cart button -->
-                            <button class="btn btn-primary add-to-cart" data-id="{{ $item->id }}">Ajouter au panier</button>
-                            <!-- View Item button -->
-                            <a href="{{ route('item.show', $item->id) }}" class="btn btn-secondary">Voir l'article</a>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
+        <!-- Container for the items -->
+        <div id="items-container">
+            @include('shop.parts.items', ['items' => $items])
         </div>
 
     </div>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        // Add to Cart functionality
-        let addToCartButtons = document.querySelectorAll('.add-to-cart');
+        $(document).ready(function() {
+            $('#search').on('keyup', function() {
+                let query = $(this).val();
+                $.ajax({
+                    url: "{{ route('shop.food') }}",
+                    type: "GET",
+                    data: { 'search': query },
+                    success: function(data) {
+                        // Update the items container with the data from the server
+                        $('#items-container').html(data);
+                    }
+                });
+            });
 
-        addToCartButtons.forEach(button => {
-            button.addEventListener('click', function(event) {
+            // Add to Cart functionality
+            $(document).on('click', '.add-to-cart', function(event) {
                 event.preventDefault();
 
-                let itemId = this.getAttribute('data-id');
+                let itemId = $(this).attr('data-id');
                 let quantity = 1; // Change this if you want to add quantity selector for each item
 
                 // Make a request to the server to add the item to the cart.
@@ -91,6 +87,5 @@
                     });
             });
         });
-
     </script>
 @endsection
