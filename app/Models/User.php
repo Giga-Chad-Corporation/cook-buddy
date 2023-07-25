@@ -46,6 +46,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasOne(Provider::class);
     }
 
+    public function isSubscribedToPlan($planName)
+    {
+        if ($this->subscription && $this->subscription->plan) {
+            return $this->subscription->plan->name === $planName;
+        }
+
+        return false;
+    }
+
+
 
     public function reviewedServices()
     {

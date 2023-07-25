@@ -20,6 +20,9 @@ class ServiceTypeSeeder extends Seeder
             'Ateliers',
             'Formations professionnelles',
             'Évenements',
+            'Livraison',
+            'Reservation',
+            'Evenement'
         ];
 
         foreach ($serviceTypes as $serviceType) {

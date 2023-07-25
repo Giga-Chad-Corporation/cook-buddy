@@ -38,19 +38,21 @@
                     <a class="nav-link" href="{{ url('/formation') }}">Formations</a>
                 </li>
 
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url('/events') }}">Événements</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url('/reservations') }}">Réservations</a>
-                </li>
-
                 @auth
+                    @if (Auth::user()->isSubscribedToPlan('Master'))
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/events') }}">Événements</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ url('/reservation') }}">Réservations</a>
+                        </li>
+                    @endif
+
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url('/shop') }}">Boutique</a>
                     </li>
-
                 @endauth
+
             </ul>
         </div>
         <div class="d-flex">
