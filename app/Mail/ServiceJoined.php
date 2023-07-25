@@ -26,8 +26,8 @@ class ServiceJoined extends Mailable
     {
         return $this->view('emails.serviceJoined')
             ->with([
-                'userName' => $this->user->name,
-                'serviceName' => $this->service->name,
+                'userName' => $this->user->username,
+                'serviceName' => $this->service->title,
             ]);
     }
 }

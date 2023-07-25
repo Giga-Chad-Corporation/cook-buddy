@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ServiceJoined;
 use App\Models\Building;
 use App\Models\Provider;
 use App\Models\ProviderType;
@@ -11,6 +12,7 @@ use App\Models\ServiceType;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 
 
@@ -264,6 +266,7 @@ class ServiceController extends Controller
                 'number_places' => $remainingPlaces,
             ]);
 
+            Mail::to($user->email)->send(new ServiceJoined($user, $service));
             return response()->json(['message' => 'Service added to user.'], 200);
         }
 

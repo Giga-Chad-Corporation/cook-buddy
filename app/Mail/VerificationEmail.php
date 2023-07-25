@@ -31,8 +31,7 @@ class VerificationEmail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Verify Your Email')
-            ->markdown('emails.verification')  // Change back to 'markdown' to use components
+        return $this->view('emails.verification')
             ->with([
                 'verificationUrl' => $this->verificationUrl,
             ]);
