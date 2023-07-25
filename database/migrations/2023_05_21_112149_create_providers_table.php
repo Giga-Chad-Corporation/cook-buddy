@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('providers', function (Blueprint $table) {
             $table->id();
-            $table->float('hourly_cost');
+            $table->float('revenue')->default(0);
             $table->timestamps();
         });
     }

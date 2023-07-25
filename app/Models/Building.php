@@ -14,10 +14,6 @@ class Building extends Model
         'address',
     ];
 
-    public function region()
-    {
-        return $this->belongsTo(Region::class);
-    }
 
     public function ingredients()
     {
@@ -32,5 +28,15 @@ class Building extends Model
     public function items()
     {
         return $this->belongsToMany(Item::class)->withPivot('quantity');
+    }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'service_building');
+    }
+
+    public function buildingType()
+    {
+        return $this->belongsTo(BuildingType::class);
     }
 }

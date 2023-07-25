@@ -4,30 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class Admin extends Model
+class Admin extends Authenticatable
 {
     use HasFactory;
 
     protected $fillable = [
-        'last_name',
-        'first_name',
-        'email',
-        'password',
-        'username',
-        'is_moderator',
-        'is_structure_administrator',
-        'is_provider_administrator',
+        'first_name', 'last_name', 'email', 'password', 'is_super_admin', 'manage_admins', 'manage_users', 'manage_providers', 'manage_services', 'manage_plans'
     ];
 
-    public function documents()
+    public function user()
     {
-        return $this->hasMany(Document::class);
+        return $this->belongsTo(User::class);
     }
-
-    public function reportTickets()
-    {
-        return $this->hasMany(ReportTicket::class);
-    }
-
 }

@@ -10,18 +10,20 @@ class Provider extends Model
     use HasFactory;
 
     protected $fillable = [
-        'hourly_cost',
+        'user_id', 'provider_type_id',
     ];
+
+    protected $attributes = [
+        'revenue' => 0,
+    ];
+
 
     public function providerType()
     {
         return $this->belongsTo(ProviderType::class);
     }
 
-    public function services()
-    {
-        return $this->hasMany(Service::class);
-    }
+
 
     public function providerBills()
     {
@@ -37,6 +39,8 @@ class Provider extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+
 
     public function messages()
     {
@@ -54,6 +58,33 @@ class Provider extends Model
             ->withPivot('message_content')
             ->withTimestamps();
     }
+
+    public function offers()
+    {
+        return $this->hasMany('App\Models\Offer');
+    }
+
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function quotes()
+    {
+        return $this->hasMany(Quote::class);
+    }
+
+    public function services()
+    {
+        return $this->belongsToMany(Service::class, 'service_provider')->withPivot('commission');
+    }
+
+
+    public function regions()
+    {
+        return $this->belongsToMany(Region::class)->withPivot('available_date', 'start_time', 'end_time')->withTimestamps();
+    }
+
 
 
 }

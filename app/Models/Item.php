@@ -15,10 +15,11 @@ class Item extends Model
         'selling_price',
     ];
 
-    public function itemOrders()
+    public function orders()
     {
-        return $this->belongsToMany(ItemOrder::class)->withPivot('quantity');
+        return $this->belongsToMany(Order::class)->withPivot('quantity')->withTimestamps();
     }
+
 
     public function itemType()
     {
@@ -33,5 +34,13 @@ class Item extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+    public function ingredients()
+    {
+        return $this->belongsToMany(Ingredient::class, 'item_ingredient');
+    }
+    public function lesson()
+    {
+        return $this->belongsTo(Lesson::class);
     }
 }

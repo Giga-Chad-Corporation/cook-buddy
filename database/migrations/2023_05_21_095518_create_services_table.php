@@ -13,12 +13,17 @@ return new class extends Migration
     {
         Schema::create('services', function (Blueprint $table) {
             $table->id();
-            $table->timestamp('start_date_time');
-            $table->timestamp('end_date_time');
+            $table->timestamp('start_date_time')->useCurrent();
+            $table->timestamp('end_date_time')->nullable();
+            $table->text('title')->nullable();
+            $table->text('description')->nullable();
+            $table->unsignedInteger('number_places')->default(1);
+            $table->string('picture')->nullable();
+            $table->decimal('cost', 8, 2);
+            $table->string('live_stream_url')->nullable();
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
@@ -28,3 +33,4 @@ return new class extends Migration
         Schema::dropIfExists('services');
     }
 };
+

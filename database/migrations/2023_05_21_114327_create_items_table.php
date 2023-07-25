@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->id();
             $table->string('model_name');
-            $table->float('buying_price');
             $table->float('selling_price');
+            $table->string('picture_url')->nullable(); // Add this line
+            $table->text('description')->nullable(); // Add this line for description
             $table->timestamps();
         });
     }

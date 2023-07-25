@@ -9,15 +9,10 @@ class Region extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['champ'];
+    protected $fillable = ['name'];
 
-    public function user()
+    public function providers()
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function buildings()
-    {
-        return $this->hasMany(Building::class);
+        return $this->belongsToMany(Provider::class)->withPivot('available_date', 'start_time', 'end_time')->withTimestamps();
     }
 }
